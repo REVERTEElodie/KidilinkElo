@@ -1,7 +1,9 @@
 <?php
 
 namespace App\DataFixtures;
-
+/**
+ * En attente de notre ISSUE pour intégrer des fausses données en BDD
+ */
 use Faker\Factory;
 use Faker\Generator;
 use App\Entity\User;
