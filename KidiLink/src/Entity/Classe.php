@@ -14,7 +14,7 @@ class Classe
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(length: 64)]
     #[ASSERT\NotBlank()]
@@ -37,7 +37,7 @@ class Classe
     private ?\DateTimeImmutable $updated_at = null;
 
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
