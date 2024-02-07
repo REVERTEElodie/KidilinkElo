@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use Faker\Factory;
 use App\Entity\User;
 use Faker\Generator;
+use App\Entity\Album;
 use App\Entity\Classe;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -39,6 +40,13 @@ class AppFixtures extends Fixture
             $classe = new Classe();
             $classe->setName($this->faker->word());
             $classe->setAnneeScolaire($this->faker->year());
+            $manager->persist($classe);
+        }
+
+        for ($i=0; $i < 20 ; $i++) { 
+            $classe = new Album();
+            $classe->setTitle($this->faker->word());
+            $classe->setDescription($this->faker->sentence());
             $manager->persist($classe);
         }
 
