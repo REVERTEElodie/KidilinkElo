@@ -2,10 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\ClasseRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ClasseRepository;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ClasseRepository::class)]
+#[UniqueEntity('name')]
 class Classe
 {
     #[ORM\Id]
@@ -14,6 +17,7 @@ class Classe
     private ?int $id = null;
 
     #[ORM\Column(length: 64)]
+    #[ASSERT\NotBlank()]
     private ?string $name = null;
 
     #[ORM\Column(length: 18)]
@@ -22,8 +26,16 @@ class Classe
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
+    //Fonction construct pour formater les dates de créations et de modifications.
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+    }
+
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
 
     public function getId(): ?int
     {
