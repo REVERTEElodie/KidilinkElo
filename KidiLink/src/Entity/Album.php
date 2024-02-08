@@ -22,7 +22,7 @@ class Album
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
-    
+
         //Fonction construct pour formater les dates de créations et de modifications.
         public function __construct()
         {
@@ -32,6 +32,7 @@ class Album
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+    
 
    
     public function getId(): ?int
@@ -87,7 +88,10 @@ class Album
         return $this;
     }
 
+<<<<<<< HEAD
    
 
    
+=======
+>>>>>>> 39082da90a9867cf92415180052aee73fd91b175
 }
