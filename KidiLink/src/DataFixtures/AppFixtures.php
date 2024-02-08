@@ -47,20 +47,30 @@ class AppFixtures extends Fixture
             $manager->persist($classe);
         }
 
+        $albums = [];
+        $albumsCounts =  5;
+        $photoCount = 200;
         //Données pour les Albums
-        for ($i=0; $i < 20 ; $i++) { 
+        for ($i=0; $i < $albumsCounts ; $i++) { 
             $album = new Album();
             $album->setTitle($this->faker->word());
             $album->setDescription($this->faker->sentence());
             $manager->persist($album);
+            $albums[] = $album;
         }
 
+        $manager->flush();
+
         //Données pour les Photos
-        for ($i=0; $i < 200 ; $i++) { 
+        for ($i=0; $i < $photoCount ; $i++) { 
             $photo = new Photo();
             $photo->setTitle($this->faker->word());
             $photo->setDescription($this->faker->sentence());
             $photo->setUrl($this->faker->url());
+            // albums de 0 à 19
+            // si je divise par 10 mon $i par exemple 199 j'obtient 19.9 et que j'arrondis à l'entier inférieur j'ai 19
+            // photoCount / alBumCount
+            $photo->setAlbum($albums[floor($i/($photoCount/$albumsCounts))]);
             $manager->persist($photo);
         }
         //Données pour les commentaires

@@ -36,7 +36,7 @@ class Album
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\OneToMany(mappedBy: 'relation', targetEntity: Photo::class)]
+    #[ORM\OneToMany(mappedBy: 'album', targetEntity: Photo::class)]
     private Collection $photos;
     
 
@@ -106,7 +106,7 @@ class Album
     {
         if (!$this->photos->contains($photo)) {
             $this->photos->add($photo);
-            $photo->setRelation($this);
+            $photo->setAlbum($this);
         }
 
         return $this;
@@ -116,8 +116,8 @@ class Album
     {
         if ($this->photos->removeElement($photo)) {
             // set the owning side to null (unless already changed)
-            if ($photo->getRelation() === $this) {
-                $photo->setRelation(null);
+            if ($photo->getAlbum() === $this) {
+                $photo->setAlbum(null);
             }
         }
 

@@ -40,8 +40,8 @@ class Photo
 
     #[ORM\ManyToOne(inversedBy: 'photos')]
     //super important pour ne pas faire buguer les tables avec les clés étrangères: 
-    #[ORM\JoinColumn(onDelete: "CASCADE")]
-    private ?Album $relation = null;
+    #[ORM\JoinColumn(nullable:false, onDelete: "CASCADE")]
+    private ?Album $album = null;
 
     public function getId(): ?int
     {
@@ -120,14 +120,14 @@ class Photo
         return $this;
     }
 
-    public function getRelation(): ?Album
+    public function getAlbum(): ?Album
     {
-        return $this->relation;
+        return $this->album;
     }
 
-    public function setRelation(?Album $relation): static
+    public function setAlbum(?Album $album): static
     {
-        $this->relation = $relation;
+        $this->album = $album;
 
         return $this;
     }
