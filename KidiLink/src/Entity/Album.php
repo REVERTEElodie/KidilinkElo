@@ -33,6 +33,7 @@ class Album
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
+   
     public function getId(): ?int
     {
         return $this->id;
@@ -85,4 +86,8 @@ class Album
 
         return $this;
     }
+
+   
+
+   
 }
