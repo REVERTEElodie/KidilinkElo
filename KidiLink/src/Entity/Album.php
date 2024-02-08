@@ -34,6 +34,7 @@ class Album
     private ?\DateTimeImmutable $updated_at = null;
     
 
+   
     public function getId(): ?int
     {
         return $this->id;
