@@ -60,7 +60,8 @@ class AppFixtures extends Fixture
         }
 
         $manager->flush();
-
+        
+        $photos = [];
         //Données pour les Photos
         for ($i=0; $i < $photoCount ; $i++) { 
             $photo = new Photo();
@@ -72,23 +73,23 @@ class AppFixtures extends Fixture
             // photoCount / alBumCount
             $photo->setAlbum($albums[floor($i/($photoCount/$albumsCounts))]);
             $manager->persist($photo);
+            $photos[]= $photo;
+            
         }
-        //Données pour les commentaires
-        for ($i=0; $i < 400; $i++) { 
-            $comment = new Comment();
-            $comment->setContent($this->faker->sentence());
-            $comment->setPhoto($comment);
-            $manager->persist($comment);
-        }
-
+         $manager->flush();
+        $commentCount = 30;
         //Données por les commentaires
-        for ($i=0; $i < 400 ; $i++) { 
+        for ($i=0; $i < $commentCount ; $i++) { 
             $comment = new Comment();
             $comment->setContent($this->faker->sentence());
-            $manager->persist($comment);
+            if ($i < count($photos)) {
+                $comment->setPhoto($photos[$i]);
+                $photo->setAlbum($albums[floor($i/($commentCount/$albumsCounts))]);
+            }
+            $manager->persist($comment);             
 
+        }
+        
         $manager->flush();
     }
-
-}
 }

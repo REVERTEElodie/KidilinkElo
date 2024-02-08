@@ -16,20 +16,17 @@ class Comment
     private ?string $content = null;
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
-            //Fonction construct pour formater les dates de créations et de modifications.
-            public function __construct()
-            {
-                $this->created_at = new \DateTimeImmutable();
-                $this->updated_at = new \DateTimeImmutable();
-                $this->comments = new ArrayCollection();
-            }
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(onDelete: "CASCADE")]
-    private ?self $photo = null;
-    #[ORM\OneToMany(mappedBy: 'photo', targetEntity: self::class)]
-    private Collection $comments;
+    #[ORM\ManyToOne(inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Photo $photo = null;
+    //Fonction construct pour formater les dates de créations et de modifications.
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -61,38 +58,13 @@ class Comment
         $this->updated_at = $updated_at;
         return $this;
     }
-    public function getPhoto(): ?self
+    public function getPhoto(): ?Photo
     {
         return $this->photo;
     }
-    public function setPhoto(?self $photo): static
+    public function setPhoto(?Photo $photo): static
     {
         $this->photo = $photo;
-        return $this;
-    }
-    /**
-     * @return Collection<int, self>
-     */
-    public function getComments(): Collection
-    {
-        return $this->comments;
-    }
-    public function addComment(self $comment): static
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
-            $comment->setPhoto($this);
-        }
-        return $this;
-    }
-    public function removeComment(self $comment): static
-    {
-        if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
-            if ($comment->getPhoto() === $this) {
-                $comment->setPhoto(null);
-            }
-        }
         return $this;
     }
 }
