@@ -28,21 +28,12 @@ class Photo
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
-<<<<<<< HEAD
         //Fonction construct pour formater les dates de créations et de modifications.
         public function __construct()
         {
             $this->created_at = new \DateTimeImmutable();
             $this->updated_at = new \DateTimeImmutable();
         }
-=======
-
-    public function __construct()
-    {
-        $this->created_at = new \DateTimeImmutable();
-        $this->updated_at = new \DateTimeImmutable();
-    }
->>>>>>> b91af9af6b22162ce3faef25a1bcaac808b0f8af
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;

@@ -26,13 +26,8 @@ class AppFixtures extends Fixture
     }
 
     public function load(ObjectManager $manager): void
-<<<<<<< HEAD
     {   
         //Données des utilisateurs
-=======
-    {
-        // Données des utilisateurs
->>>>>>> b91af9af6b22162ce3faef25a1bcaac808b0f8af
         $user = new User();
         $user->setEmail('admin@kidilink.com');
         $user->setRoles(["ROLE_ADMIN"]);
@@ -44,11 +39,7 @@ class AppFixtures extends Fixture
         $user->setPassword($hashedPassword);
         $manager->persist($user);
         
-<<<<<<< HEAD
         //Données pour les classes
-=======
-        // Données pour les classes
->>>>>>> b91af9af6b22162ce3faef25a1bcaac808b0f8af
         for ($i=0; $i < 10 ; $i++) { 
             $classe = new Classe();
             $classe->setName($this->faker->word());
@@ -56,12 +47,7 @@ class AppFixtures extends Fixture
             $manager->persist($classe);
         }
 
-<<<<<<< HEAD
         //Données pour les Albums
-=======
-
-        // Données pour les albums
->>>>>>> b91af9af6b22162ce3faef25a1bcaac808b0f8af
         for ($i=0; $i < 20 ; $i++) { 
             $album = new Album();
             $album->setTitle($this->faker->word());
@@ -69,27 +55,19 @@ class AppFixtures extends Fixture
             $manager->persist($album);
         }
 
-<<<<<<< HEAD
         //Données pour les Photos
-=======
-
-        // Données pour les photos
->>>>>>> b91af9af6b22162ce3faef25a1bcaac808b0f8af
         for ($i=0; $i < 200 ; $i++) { 
             $photo = new Photo();
             $photo->setTitle($this->faker->word());
             $photo->setDescription($this->faker->sentence());
             $photo->setUrl($this->faker->url());
             $manager->persist($photo);
-<<<<<<< HEAD
         }
         //Données pour les commentaires
         for ($i=0; $i < 400; $i++) { 
             $comment = new Comment();
             $comment->setContent($this->faker->sentence());
             $manager->persist($comment);
-=======
->>>>>>> b91af9af6b22162ce3faef25a1bcaac808b0f8af
         }
 
         //Données por les commentaires
