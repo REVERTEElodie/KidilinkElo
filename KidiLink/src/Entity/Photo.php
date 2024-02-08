@@ -28,15 +28,20 @@ class Photo
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
-
-    public function __construct()
-    {
-        $this->created_at = new \DateTimeImmutable();
-        $this->updated_at = new \DateTimeImmutable();
-    }
+        //Fonction construct pour formater les dates de créations et de modifications.
+        public function __construct()
+        {
+            $this->created_at = new \DateTimeImmutable();
+            $this->updated_at = new \DateTimeImmutable();
+        }
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\ManyToOne(inversedBy: 'photos')]
+    //super important pour ne pas faire buguer les tables avec les clés étrangères: 
+    #[ORM\JoinColumn(nullable:false, onDelete: "CASCADE")]
+    private ?Album $album = null;
 
     public function getId(): ?int
     {
@@ -111,6 +116,18 @@ class Photo
     public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getAlbum(): ?Album
+    {
+        return $this->album;
+    }
+
+    public function setAlbum(?Album $album): static
+    {
+        $this->album = $album;
 
         return $this;
     }
