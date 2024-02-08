@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\AlbumRepository;
+use App\Repository\PhotoRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: AlbumRepository::class)]
-class Album
+#[ORM\Entity(repositoryClass: PhotoRepository::class)]
+class Photo
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -20,21 +20,24 @@ class Album
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $url = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $likes = null;
+
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-        //Fonction construct pour formater les dates de créations et de modifications.
-        public function __construct()
-        {
-            $this->created_at = new \DateTimeImmutable();
-            $this->updated_at = new \DateTimeImmutable();
-        }
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+    }
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
-    
 
-   
     public function getId(): ?int
     {
         return $this->id;
@@ -64,6 +67,30 @@ class Album
         return $this;
     }
 
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): static
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getLikes(): ?int
+    {
+        return $this->likes;
+    }
+
+    public function setLikes(?int $likes): static
+    {
+        $this->likes = $likes;
+
+        return $this;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
@@ -87,5 +114,4 @@ class Album
 
         return $this;
     }
-
 }

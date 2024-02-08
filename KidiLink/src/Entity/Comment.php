@@ -2,64 +2,46 @@
 
 namespace App\Entity;
 
-use App\Repository\AlbumRepository;
+use App\Repository\CommentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: AlbumRepository::class)]
-class Album
+#[ORM\Entity(repositoryClass: CommentRepository::class)]
+class Comment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $content = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-        //Fonction construct pour formater les dates de créations et de modifications.
-        public function __construct()
-        {
-            $this->created_at = new \DateTimeImmutable();
-            $this->updated_at = new \DateTimeImmutable();
-        }
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+    }
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
-    
 
-   
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getContent(): ?string
     {
-        return $this->title;
+        return $this->content;
     }
 
-    public function setTitle(string $title): static
+    public function setContent(string $content): static
     {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
+        $this->content = $content;
 
         return $this;
     }
@@ -87,5 +69,4 @@ class Album
 
         return $this;
     }
-
 }
