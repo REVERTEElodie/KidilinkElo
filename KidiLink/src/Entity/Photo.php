@@ -38,6 +38,10 @@ class Photo
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
+    #[ORM\ManyToOne(inversedBy: 'photos')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Album $relation = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -111,6 +115,18 @@ class Photo
     public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getRelation(): ?Album
+    {
+        return $this->relation;
+    }
+
+    public function setRelation(?Album $relation): static
+    {
+        $this->relation = $relation;
 
         return $this;
     }
