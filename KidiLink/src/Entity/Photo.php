@@ -39,7 +39,8 @@ class Photo
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'photos')]
-    #[ORM\JoinColumn(nullable: false)]
+    //super important pour ne pas faire buguer les tables avec les clés étrangères: 
+    #[ORM\JoinColumn(onDelete: "CASCADE")]
     private ?Album $relation = null;
 
     public function getId(): ?int
