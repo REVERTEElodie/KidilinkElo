@@ -4,8 +4,9 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ClasseRepository;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ClasseRepository::class)]
 #[UniqueEntity('name')]
@@ -14,13 +15,16 @@ class Classe
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['get_classes_collection', 'get_class_item'])]
     private int $id;
 
     #[ORM\Column(length: 64)]
     #[ASSERT\NotBlank()]
+    #[Groups(['get_classes_collection', 'get_class_item'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 18)]
+    #[Groups(['get_classes_collection', 'get_class_item'])]
     private ?string $annee_scolaire = null;
 
     #[ORM\Column]

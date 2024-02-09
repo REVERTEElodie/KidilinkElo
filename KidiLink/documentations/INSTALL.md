@@ -43,3 +43,6 @@ puis
 ```
 bin/console doctrine:migrations:migrate
 ```
+//modif .env.local->y copier coller la ligne du .env qui contient la databaseURL + adapter à l'enviro local.
+composer install
+puis re aux consignes du début.

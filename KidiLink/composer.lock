@@ -6622,16 +6622,16 @@
         },
         {
             "name": "symfony/serializer",
-            "version": "v6.3.11",
+            "version": "v6.3.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/serializer.git",
-                "reference": "83a2e5ec60dddfb227b28ef9bffb7da073e50cfc"
+                "reference": "917d5ecbd6a7aece5b6a33c7aab82ee087d69803"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/serializer/zipball/83a2e5ec60dddfb227b28ef9bffb7da073e50cfc",
-                "reference": "83a2e5ec60dddfb227b28ef9bffb7da073e50cfc",
+                "url": "https://api.github.com/repos/symfony/serializer/zipball/917d5ecbd6a7aece5b6a33c7aab82ee087d69803",
+                "reference": "917d5ecbd6a7aece5b6a33c7aab82ee087d69803",
                 "shasum": ""
             },
             "require": {
@@ -6662,7 +6662,7 @@
                 "symfony/http-foundation": "^5.4|^6.0",
                 "symfony/http-kernel": "^5.4|^6.0",
                 "symfony/mime": "^5.4|^6.0",
-                "symfony/property-access": "^5.4|^6.0",
+                "symfony/property-access": "^5.4.26|^6.3",
                 "symfony/property-info": "^5.4.24|^6.2.11",
                 "symfony/uid": "^5.4|^6.0",
                 "symfony/validator": "^5.4|^6.0",
@@ -6696,7 +6696,7 @@
             "description": "Handles serializing and deserializing data structures, including object graphs, into array structures or other formats like XML and JSON.",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/serializer/tree/v6.3.11"
+                "source": "https://github.com/symfony/serializer/tree/v6.3.12"
             },
             "funding": [
                 {
@@ -6712,7 +6712,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-12-29T15:20:22+00:00"
+            "time": "2024-01-30T08:17:33+00:00"
         },
         {
             "name": "symfony/service-contracts",
