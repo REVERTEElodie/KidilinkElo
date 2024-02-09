@@ -38,6 +38,10 @@ class Album
 
     #[ORM\OneToMany(mappedBy: 'album', targetEntity: Photo::class)]
     private Collection $photos;
+
+    #[ORM\ManyToOne(inversedBy: 'albums')]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    private ?Classe $classe = null;
     
 
    
@@ -120,6 +124,18 @@ class Album
                 $photo->setAlbum(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getClasse(): ?Classe
+    {
+        return $this->classe;
+    }
+
+    public function setClasse(?Classe $classe): static
+    {
+        $this->classe = $classe;
 
         return $this;
     }
