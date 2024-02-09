@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\PhotoRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\PhotoRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PhotoRepository::class)]
 class Photo
@@ -14,18 +15,23 @@ class Photo
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['get_photos_collection', 'get_photo_item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['get_photos_collection', 'get_photo_item'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['get_photos_collection', 'get_photo_item'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['get_photos_collection', 'get_photo_item'])]
     private ?string $url = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['get_photos_collection', 'get_photo_item'])]
     private ?int $likes = null;
 
     #[ORM\Column]
@@ -44,11 +50,14 @@ class Photo
     #[ORM\ManyToOne(inversedBy: 'photos')]
     //super important pour ne pas faire buguer les tables avec les clés étrangères: 
     #[ORM\JoinColumn(nullable:false, onDelete: "CASCADE")]
+    #[Groups(['get_photos_collection', 'get_photo_item'])]
     private ?Album $album = null;
 
     #[ORM\OneToMany(mappedBy: 'photo', targetEntity: Comment::class, orphanRemoval: true)]
+
     private Collection $comments;
 
+    
     public function getId(): ?int
     {
         return $this->id;
