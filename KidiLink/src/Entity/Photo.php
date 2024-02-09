@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PhotoRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -33,6 +35,7 @@ class Photo
         {
             $this->created_at = new \DateTimeImmutable();
             $this->updated_at = new \DateTimeImmutable();
+            $this->comments = new ArrayCollection();
         }
 
     #[ORM\Column]
@@ -42,6 +45,9 @@ class Photo
     //super important pour ne pas faire buguer les tables avec les clés étrangères: 
     #[ORM\JoinColumn(nullable:false, onDelete: "CASCADE")]
     private ?Album $album = null;
+
+    #[ORM\OneToMany(mappedBy: 'photo', targetEntity: Comment::class, orphanRemoval: true)]
+    private Collection $comments;
 
     public function getId(): ?int
     {
@@ -128,6 +134,36 @@ class Photo
     public function setAlbum(?Album $album): static
     {
         $this->album = $album;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setPhoto($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getPhoto() === $this) {
+                $comment->setPhoto(null);
+            }
+        }
 
         return $this;
     }
