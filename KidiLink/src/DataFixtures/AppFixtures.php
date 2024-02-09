@@ -39,14 +39,19 @@ class AppFixtures extends Fixture
         $user->setPassword($hashedPassword);
         $manager->persist($user);
         
+        $classes = [];
+        $classCount = 10;
         //Données pour les classes
         for ($i=0; $i < 10 ; $i++) { 
             $classe = new Classe();
             $classe->setName($this->faker->word());
             $classe->setAnneeScolaire($this->faker->year());
             $manager->persist($classe);
+            $classes[] = $classe;
         }
+            $manager->flush();
 
+        $photos = [];
         $albums = [];
         $albumsCounts =  5;
         $photoCount = 200;
@@ -55,6 +60,8 @@ class AppFixtures extends Fixture
             $album = new Album();
             $album->setTitle($this->faker->word());
             $album->setDescription($this->faker->sentence());
+            //ici
+            $album->setClasse($classes[floor($i/($albumsCounts/$classCount))]);
             $manager->persist($album);
             $albums[] = $album;
         }
@@ -62,6 +69,7 @@ class AppFixtures extends Fixture
         $manager->flush();
         
         $photos = [];
+        $photoCount = 200;
         //Données pour les Photos
         for ($i=0; $i < $photoCount ; $i++) { 
             $photo = new Photo();
@@ -77,6 +85,7 @@ class AppFixtures extends Fixture
             
         }
          $manager->flush();
+
         $commentCount = 30;
         //Données por les commentaires
         for ($i=0; $i < $commentCount ; $i++) { 

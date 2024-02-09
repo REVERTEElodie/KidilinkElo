@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\AlbumRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AlbumRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
 class Album
@@ -14,12 +15,15 @@ class Album
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['get_albums_collection', 'get_album_item'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['get_albums_collection', 'get_album_item'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['get_albums_collection', 'get_album_item'])]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -38,6 +42,11 @@ class Album
 
     #[ORM\OneToMany(mappedBy: 'album', targetEntity: Photo::class)]
     private Collection $photos;
+
+    #[ORM\ManyToOne(inversedBy: 'albums')]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    #[Groups(['get_albums_collection', 'get_album_item'])]
+    private ?Classe $classe = null;
     
 
    
@@ -120,6 +129,18 @@ class Album
                 $photo->setAlbum(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getClasse(): ?Classe
+    {
+        return $this->classe;
+    }
+
+    public function setClasse(?Classe $classe): static
+    {
+        $this->classe = $classe;
 
         return $this;
     }
