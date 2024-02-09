@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UserRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 
 
@@ -19,15 +20,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['get_users_collection', 'get_user_item'])]
     private ?int $id = null;
 
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['get_users_collection', 'get_user_item'])]
     private ?string $email = null;
 
 
     #[ORM\Column]
     private array $roles = [];
+    #[Groups(['get_users_collection', 'get_user_item'])]
 
     /**
      * @var string The hashed password
