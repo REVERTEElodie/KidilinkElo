@@ -34,12 +34,12 @@ class UserController extends AbstractController
     $jsonData = json_decode($request->getContent(), true);
 
     // Valider les données (ex: vérifier si les champs requis sont présents)
-    if (!isset($jsonData['Nom'], $jsonData['Prenom'], $jsonData['email'], $jsonData['password'], $jsonData['role'])) {
+    if (!isset($jsonData['lastname'], $jsonData['firstname'], $jsonData['email'], $jsonData['password'], $jsonData['role'])) {
         return $this->json(['error' => 'Les champs Nom, Prenom, email et mot de passe sont requis.'], 400);
     }
         $user = new User();
-        $user->setFirstName($jsonData['Nom']);
-        $user->setLastName($jsonData['Prenom']);
+        $user->setFirstName($jsonData['firstname']);
+        $user->setLastName($jsonData['lastname']);
         $user->setEmail($jsonData['email']);
         $user->setPassword($jsonData['password']);
         $user->setRoles($jsonData['role']);
