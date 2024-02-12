@@ -36,7 +36,7 @@ Ensuite pour mettre les données, les tables et les attributs dans adminer
 
 ```bash
 
-bin/console make:migration
+bin/console make:migration  (répondre yes)
 
 ```
 
@@ -44,13 +44,13 @@ puis
 
 ```bash
 
-bin/console doctrine:migrations:migrate
+bin/console doctrine:migrations:migrate (répondre yes)
 
 ```
 
 ```bash
 
-bin/console doctrine:fixtures:load (ou juste bin/console d:f:l)
+bin/console doctrine:fixtures:load (ou juste bin/console d:f:l) (répondre yes)
 ```
 
 Pour vérifier que vous avez les informations dans la Database se connecter avec les identifiants root et mdp root table KidiLink
