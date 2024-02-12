@@ -32,13 +32,13 @@ class SecurityController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route(path: '/api/logout', name: 'api_logout')]
+    #[Route(path: '/api/logout', name: 'api_logout',)]
     public function logout(SessionInterface $session): RedirectResponse
     {
         $session->invalidate();
 
         // TODO renseigner la route de rediction valide, à voir avec le front 
-        return $this->redirectToRoute('api_albums');
+        return $this->redirectToRoute('api_home');
         // throw new \LogicException('Veuillez entrez un utilisateur ou mot de passe valide');
     }
     

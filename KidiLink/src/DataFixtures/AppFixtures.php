@@ -29,6 +29,8 @@ class AppFixtures extends Fixture
     {   
         //Données des utilisateurs
         $user = new User();
+        $user->setFirstname('kiki');
+        $user->setLastname('kikou');
         $user->setEmail('admin@kidilink.com');
         $user->setRoles(["ROLE_ADMIN"]);
         $password = "azerty";
@@ -93,7 +95,6 @@ class AppFixtures extends Fixture
             $comment->setContent($this->faker->sentence());
             if ($i < count($photos)) {
                 $comment->setPhoto($photos[$i]);
-                $photo->setAlbum($albums[floor($i/($commentCount/$albumsCounts))]);
             }
             $manager->persist($comment);             
 
