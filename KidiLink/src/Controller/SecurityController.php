@@ -2,15 +2,17 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    #[Route(path: '/api/login', name: 'app_login')]
+    public function login(AuthenticationUtils $authenticationUtils): JsonResponse
     {
         // if ($this->getUser()) {
         //     return $this->redirectToRoute('target_path');
@@ -20,13 +22,24 @@ class SecurityController extends AbstractController
         $error = $authenticationUtils->getLastAuthenticationError();
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
+    
+        $data = [
+            'last_username' => $lastUsername,
+            'error' => $error ? $error->getMessage() : null
+        ];
 
-        return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+
+        return new JsonResponse($data);
     }
 
-    #[Route(path: '/logout', name: 'app_logout')]
-    public function logout(): void
+    #[Route(path: '/api/logout', name: 'api_logout')]
+    public function logout(SessionInterface $session): RedirectResponse
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        $session->invalidate();
+
+        // TODO renseigner la route de rediction valide, à voir avec le front 
+        return $this->redirectToRoute('api_albums');
+        // throw new \LogicException('Veuillez entrez un utilisateur ou mot de passe valide');
     }
+    
 }

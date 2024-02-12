@@ -20,6 +20,8 @@ class UserController extends AbstractController
         return $this->json($users, 200, [], ['groups' => 'get_users_collection', 'get_user_item']);
     }
 
+    
+
     }
 
 

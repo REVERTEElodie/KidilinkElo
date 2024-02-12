@@ -10,7 +10,7 @@ composer create-project symfony/skeleton:"6.3*" KidiLink
 
 puis faire cd KidiLink pour être dans le projet
 
-Injections des dépendances : 
+Injections des dépendances :
 
 ```bash
 composer require webapp
@@ -26,7 +26,7 @@ pour créer dans Adminer :
 php bin/console doctrine:database:create
 ```
 
-Création entité User : 
+Création entité User :
 
 ```
 bin/console make user 
@@ -43,6 +43,3 @@ puis
 ```
 bin/console doctrine:migrations:migrate
 ```
-//modif .env.local->y copier coller la ligne du .env qui contient la databaseURL + adapter à l'enviro local.
-composer install
-puis re aux consignes du début.
