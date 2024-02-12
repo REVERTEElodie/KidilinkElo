@@ -29,6 +29,8 @@ class AppFixtures extends Fixture
     {   
         //Données des utilisateurs
         $user = new User();
+        $user->setFirstName('kiki');
+        $user->setLastName('kikou');
         $user->setEmail('admin@kidilink.com');
         $user->setRoles(["ROLE_ADMIN"]);
         $password = "azerty";
