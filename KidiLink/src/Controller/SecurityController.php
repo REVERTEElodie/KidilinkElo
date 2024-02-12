@@ -11,7 +11,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    #[Route(path: '/api/login', name: 'app_login')]
+    #[Route(path: '/api/login', name: 'app_login', methods:['GET'])]
     public function login(AuthenticationUtils $authenticationUtils): JsonResponse
     {
         // if ($this->getUser()) {
@@ -37,7 +37,7 @@ class SecurityController extends AbstractController
     {
         $session->invalidate();
 
-        //IL faut renseigner la route de redirection valide, à voir avec le FRONT
+        //TODO IL faut renseigner la route de redirection valide, à voir avec le FRONT
         return $this->redirectToRoute('api_home');
         // throw new \LogicException('Veuillez entrez un utilisateur ou mot de passe valide');
     }
