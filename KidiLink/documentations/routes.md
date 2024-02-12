@@ -6,11 +6,13 @@
 | ---------------- | ---- | ------------------ | ----- | ----------------- | ---------------------------------------------------- | --- | --- | --- |
 | /api/login | GET | SecurityController | login | Page de connexion | 
 
-| /api/logout | GET | SecurityController | logout | redirection page accueil   PS : Aller dans le SRC Security AppAuthenticator.php allez au TODO et changer le nom de la route pour votre route de page d'accueil.                                                 |     |     |     |
+| /api/logout | GET | SecurityController | logout | redirection page accueil   PS : Aller dans le SRC Controller SecurityController allez au TODO et changer le nom de la route pour votre route de page d'accueil.                                                 |     |     |     |
 
 |/api/users | GET | UserController | index | Affichage des utilisateurs | Récupération de la liste des utilisateurs|
 
 /api/users | POST | UserController | create | Création d'un utilisateur | Récupération de la liste des utilisateurs
+
+
 
 /api/albums | GET | AlbumController | index | Gestion des albums | Récupération et créations d'albums
 
