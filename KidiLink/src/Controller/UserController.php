@@ -47,8 +47,6 @@ class UserController extends AbstractController
         $hashedPassword = $passwordHasher->hashPassword($user, $jsonData['password']);
         $user->setPassword($hashedPassword);
 
-        $user->setRoles(['ROLE_USER']);
-
         $entityManager->persist($user);
         $entityManager->flush();
         
@@ -71,6 +69,43 @@ class UserController extends AbstractController
     
         return $this->json(['message' => 'Utilisateur supprimé avec succès'], 200);
     }
+    //Modifier un utilisateur
+    #[Route('/api/users/{id}', name: 'api_users_edit', methods: ['PUT'])]
+public function edit(int $id, Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher): JsonResponse
+{
+    // Récupérer l'utilisateur à mettre à jour
+    $user = $userRepository->find($id);
+
+    // Vérifier si l'utilisateur existe
+    if (!$user) {
+        return $this->json(['error' => 'Utilisateur non trouvé.'], 404);
+    }
+
+    // Récupérer les données JSON de la requête
+    $jsonData = json_decode($request->getContent(), true);
+
+    // Mettre à jour les propriétés de l'utilisateur
+    if (isset($jsonData['lastname'])) {
+        $user->setLastName($jsonData['lastname']);
+    }
+    if (isset($jsonData['firstname'])) {
+        $user->setFirstName($jsonData['firstname']);
+    }
+    if (isset($jsonData['email'])) {
+        $user->setEmail($jsonData['email']);
+    }
+    if (isset($jsonData['password'])) {
+        // Vous pouvez choisir de hasher le nouveau mot de passe ici si nécessaire
+        $hashedPassword = $passwordHasher->hashPassword($user, $jsonData['password']);
+        $user->setPassword($hashedPassword);
+    }
+
+    // Persistez les changements dans la base de données
+    $entityManager->flush();
+
+    // Retournez une réponse JSON indiquant le succès de l'opération
+    return $this->json(['message' => 'Utilisateur mis à jour avec succès'], 200);
+}
     }
 
     // #[Route('/{id<\d+>}', name: 'app_back_movie_delete', methods: ['POST'])]
