@@ -5,7 +5,7 @@
 | /api             | GET  | MainController     | home  | Page d'Accueil    | Page d'accueil affichant les derniers albums ajoutés |     |     |     |
 | ---------------- | ---- | ------------------ | ----- | ----------------- | ---------------------------------------------------- | --- | --- | --- |
 | /api/login | GET | SecurityController | login | Page de connexion | 
-
+(info à récup : last_username)
 | /api/logout | GET | SecurityController | logout | redirection page accueil   PS : Aller dans le SRC Controller SecurityController allez au TODO et changer le nom de la route pour votre route de page d'accueil.                                                 |     |     |     |
 
 |/api/users | GET | UserController | index | Affichage des utilisateurs | Récupération de la liste des utilisateurs|
