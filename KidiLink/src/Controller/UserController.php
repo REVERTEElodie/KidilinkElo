@@ -56,5 +56,23 @@ class UserController extends AbstractController
     }
     }
 
-
+    // public function buildForm(FormBuilderInterface $builder, array $options): void
+    // {
+    //     $builder
+    //         ->add('email', EmailType::class, [
+    //             'label' => 'Courriel',
+    //             'empty_data'    => '',
+    //         ])
+    //         ->add('roles', ChoiceType::class, [
+    //             'multiple'      => false,
+    //             'expanded'      => true,
+    //             'choices'       => [
+    //                 'administrateur'    => 'ROLE_ADMIN',
+    //                 'manager'           => 'ROLE_MANAGER',
+    //                 'utilisateur'       => 'ROLE_USER',
+    //             ],
+    //             'empty_data'    => '',
+    //             'label_attr'    => [
+    //                 'class'     => 'checkbox-inline',
+    //             ],
 
