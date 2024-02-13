@@ -58,4 +58,22 @@ class AlbumController extends AbstractController
         // Retourner les informations au format JSON
         return $this->json(['message' => 'L\'album est créé avec succès'], 201);
     }
+//suppression d'un album
+#[Route('/api/albums/{id}', name: 'api_albums_delete', methods: ['DELETE'])]
+public function delete(int $id, AlbumRepository $albumRepository, EntityManagerInterface $entityManager): JsonResponse
+{
+    $album = $albumRepository->find($id);
+
+    // Vérifier si l album existe
+    if (!$album) {
+        return $this->json(['error' => 'Album non trouvée.'], 404);
+    }
+
+    // Supprimer l album
+    $entityManager->remove($album);
+    $entityManager->flush();
+
+    return $this->json(['message' => 'l\'album a été supprimée avec succès'], 200);
+}
+
 }

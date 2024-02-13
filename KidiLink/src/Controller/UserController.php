@@ -41,7 +41,7 @@ class UserController extends AbstractController
         $user->setFirstName($jsonData['firstname']);
         $user->setLastName($jsonData['lastname']);
         $user->setEmail($jsonData['email']);
-        $user->setAlbum($jsonData['album']);
+        $user->setPassword($jsonData['password']);
         $user->setRoles($jsonData['role']);
 
         $hashedPassword = $passwordHasher->hashPassword($user, $jsonData['password']);
@@ -54,7 +54,60 @@ class UserController extends AbstractController
         
         return $this->json(['message' => 'Utilisateur créé avec succès'], 201);
     }
+    //suppression d'un utilisateur
+    #[Route('/api/users/{id}', name: 'api_users_delete', methods: ['DELETE'])]
+    public function delete(int $id, UserRepository $userRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $user = $userRepository->find($id);
+    
+        // Vérifier si l'utilisateur existe
+        if (!$user) {
+            return $this->json(['error' => 'Utilisateur non trouvé.'], 404);
+        }
+    
+        // Supprimer l'utilisateur
+        $entityManager->remove($user);
+        $entityManager->flush();
+    
+        return $this->json(['message' => 'Utilisateur supprimé avec succès'], 200);
+    }
     }
 
+    // #[Route('/{id<\d+>}', name: 'app_back_movie_delete', methods: ['POST'])]
+    // public function delete(Request $request, Movie $movie, EntityManagerInterface $entityManager): Response
+    // {
+    //     if ($this->isCsrfTokenValid('delete'.$movie->getId(), $request->request->get('_token'))) {
+    //         $entityManager->remove($movie);
+    //         $entityManager->flush();
 
+    //         // on prépare un message flash
+    //         // REFER : https://symfony.com/doc/current/session.html#flash-messages
+    //         $this->addFlash(
+    //             'success',
+    //             '<strong>' . $movie->getTitle() . '</strong> a été supprimé.'
+    //         );
+    //     }
+
+    //     return $this->redirectToRoute('app_back_movie_index', [], Response::HTTP_SEE_OTHER);
+    // }
+
+    // public function buildForm(FormBuilderInterface $builder, array $options): void
+    // {
+    //     $builder
+    //         ->add('email', EmailType::class, [
+    //             'label' => 'Courriel',
+    //             'empty_data'    => '',
+    //         ])
+    //         ->add('roles', ChoiceType::class, [
+    //             'multiple'      => false,
+    //             'expanded'      => true,
+    //             'choices'       => [
+    //                 'administrateur'    => 'ROLE_ADMIN',
+    //                 'manager'           => 'ROLE_MANAGER',
+    //                 'utilisateur'       => 'ROLE_USER',
+    //             ],
+    //             'empty_data'    => '',
+    //             'label_attr'    => [
+    //                 'class'     => 'checkbox-inline',
+    //             ],
 
