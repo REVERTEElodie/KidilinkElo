@@ -4,9 +4,9 @@
 Dépendances Symfony en utilisant Composer:
 
 ```bash
+ 
 
-
-composerinstall
+composer install
 
 
 ```
@@ -18,7 +18,7 @@ Injections des dépendances :
 ```bash
 
 
-composerrequirewebapp
+composer require webapp
 
 
 ```
@@ -36,7 +36,7 @@ pour créer la database afin de la voir dans Adminer :
 ```bash
 
 
-phpbin/consoledoctrine:database:create
+php bin/console doctrine:database:create
 
 
 ```
@@ -46,7 +46,7 @@ Ensuite pour mettre les données, les tables et les attributs dans adminer
 ```bash
 
 
-bin/consolemake:migration
+bin/console make:migration
 
 
 ```
@@ -56,7 +56,7 @@ puis
 ```bash
 
 
-bin/consoledoctrine:migrations:migrate
+bin/console doctrine:migrations:migrate
 
 
 ```
@@ -64,7 +64,7 @@ bin/consoledoctrine:migrations:migrate
 ```bash
 
 
-bin/consoledoctrine:fixtures:load (ou justebin/consoled:f:l)
+bin/console doctrine:fixtures:load (ou justebin/consoled:f:l)
 
 ```
 
@@ -74,6 +74,6 @@ Pour lancer le serveur : taper dans la ligne de commande :
 
 ```bash
 
-php-S127.0.0.1:8000-tpublic
+php-S 127.0.0.1:8000-t public
 
 ```

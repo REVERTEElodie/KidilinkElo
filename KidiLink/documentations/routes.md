@@ -53,4 +53,4 @@
 
 /api/comments{id}| PUT | ClassController | update | Gestion des commentaires | Mise à jour d'un commentaire
 
-/api/comments{id}| DELETE | ClassController | delete | Gestion des commentaires | Suppression d'un commentaire
+/api/comments{id}| DELETE | ClassController | delete | Gestion des commentaires | Suppression d'un commentai

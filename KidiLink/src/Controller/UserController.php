@@ -41,7 +41,7 @@ class UserController extends AbstractController
         $user->setFirstName($jsonData['firstname']);
         $user->setLastName($jsonData['lastname']);
         $user->setEmail($jsonData['email']);
-        $user->setPassword($jsonData['password']);
+        $user->setAlbum($jsonData['album']);
         $user->setRoles($jsonData['role']);
 
         $hashedPassword = $passwordHasher->hashPassword($user, $jsonData['password']);
