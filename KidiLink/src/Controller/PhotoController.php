@@ -25,8 +25,8 @@ class PhotoController extends AbstractController
         return $this->json($photos, 200, [], ['groups' => 'get_photos_collection', 'get_photos_item']);
     }
      
-     //création d'un user
-     // Réaliser sa route ne POST
+     //création d'une photo
+     // Réaliser sa route en POST
      #[Route('/api/photos/nouveau', name: 'api_photos_nouveau', methods: ['POST'])]
      public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse 
      {
