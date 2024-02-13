@@ -22,58 +22,8 @@ class AlbumController extends AbstractController
         $albums = $albumRepository->findAll();
         return $this->json($albums, 200, [], ['groups' => 'get_albums_collection', 'get_album_item']);
     }
-    
-    // Création d'un album
-    #[Route('/api/albums/nouveau', name: 'api_albums_nouveau', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        // Récupérer les données JSON de la requête
-        $jsonData = json_decode($request->getContent(), true);
 
-        // Valider les données (ex: vérifier si les champs requis sont présents)
-        if (!isset($jsonData['title'], $jsonData['description'], $jsonData['classe'])) {
-            return $this->json(['error' => 'Les champs Title, Description et Classe sont requis.'], 400);
-        }
-
-        // Gérer les clés étrangères
-        // Récupérer la classe par son ID
-        $classeId = $jsonData['classe'];
-        $classe = $entityManager->getRepository(Classe::class)->find($classeId);
-        
-        // Vérifier si la classe existe
-        if (!$classe) {
-            return $this->json(['error' => 'La classe spécifiée n\'existe pas.'], 400);
-        }
-
-        // Créer un nouvel album
-        $album = new Album();
-        $album->setTitle($jsonData['title']);
-        $album->setDescription($jsonData['description']);
-        $album->setClasse($classe);
-
-        // Enregistrer l'album
-        $entityManager->persist($album);
-        $entityManager->flush();
-        
-        // Retourner les informations au format JSON
-        return $this->json(['message' => 'L\'album est créé avec succès'], 201);
-    }
-//suppression d'un album
-#[Route('/api/albums/{id}', name: 'api_albums_delete', methods: ['DELETE'])]
-public function delete(int $id, AlbumRepository $albumRepository, EntityManagerInterface $entityManager): JsonResponse
-{
-    $album = $albumRepository->find($id);
-
-    // Vérifier si l album existe
-    if (!$album) {
-        return $this->json(['error' => 'Album non trouvée.'], 404);
     }
 
-    // Supprimer l album
-    $entityManager->remove($album);
-    $entityManager->flush();
 
-    return $this->json(['message' => 'l\'album a été supprimée avec succès'], 200);
-}
 
-}

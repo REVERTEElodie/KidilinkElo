@@ -4,7 +4,7 @@
 Dépendances Symfony en utilisant Composer:
 
 ```bash
- 
+
 
 composer install
 
@@ -46,7 +46,7 @@ Ensuite pour mettre les données, les tables et les attributs dans adminer
 ```bash
 
 
-bin/console make:migration
+bin/console make:migration  (répondre yes)
 
 
 ```
@@ -56,7 +56,7 @@ puis
 ```bash
 
 
-bin/console doctrine:migrations:migrate
+bin/console doctrine:migrations:migrate (répondre yes)
 
 
 ```
@@ -64,7 +64,7 @@ bin/console doctrine:migrations:migrate
 ```bash
 
 
-bin/console doctrine:fixtures:load (ou justebin/consoled:f:l)
+bin/console doctrine:fixtures:load (ou justebin/consoled:f:l) (répondreyes)
 
 ```
 
@@ -74,6 +74,6 @@ Pour lancer le serveur : taper dans la ligne de commande :
 
 ```bash
 
-php-S 127.0.0.1:8000-t public
+php-S 127.0.0.1:8000 -t public
 
 ```

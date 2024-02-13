@@ -61,10 +61,10 @@ if (isset($jsonData['comment'])) {
     $entityManager->persist($photo);
     $entityManager->flush();
     // retourner les infos au format json
-         return $this->json(['message' => 'photo créé avec succès'], 201);
+         return $this->json(['message' => 'Photo créée avec succès'], 201);
      }
 
-         //suppression d'un utilisateur
+         //suppression d'une photo
     #[Route('/api/photos/{id}', name: 'api_photos_delete', methods: ['DELETE'])]
     public function delete(int $id, PhotoRepository $photoRepository, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -72,13 +72,13 @@ if (isset($jsonData['comment'])) {
     
         // Vérifier si la photo existe
         if (!$photo) {
-            return $this->json(['error' => 'photo non trouvée.'], 404);
+            return $this->json(['error' => 'Photo non trouvée.'], 404);
         }
     
         // Supprimer la photo
         $entityManager->remove($photo);
         $entityManager->flush();
     
-        return $this->json(['message' => 'la photo a été supprimée avec succès'], 200);
+        return $this->json(['message' => 'Photo supprimée avec succès'], 200);
     }
     }

@@ -6,20 +6,20 @@
 | /api             | GET  | MainController     | home  | Page d'Accueil    | Page d'accueil affichant les derniers albums ajoutés |     |     |     |
 
 | ---------------- | ---- | ------------------ | ----- | ----------------- | ---------------------------------------------------- | --- | --- | --- |
-
-| /api/login | GET | SecurityController | login | Page de connexion |
-
+| /api/login | GET | SecurityController | login | Page de connexion | 
+(info à récup : last_username)
 | /api/logout | GET | SecurityController | logout | redirection page accueil   PS : Aller dans le SRC Controller SecurityController allez au TODO et changer le nom de la route pour votre route de page d'accueil.                                                 |     |     |     |
 
 |/api/users | GET | UserController | index | Affichage des utilisateurs | Récupération de la liste des utilisateurs|
 
 /api/users | POST | UserController | create | Création d'un utilisateur | Récupération de la liste des utilisateurs
-
 (les infos à récup sont : firstname lastname email password role)
+
 
 /api/albums | GET | AlbumController | index | Gestion des albums | Récupération et créations d'albums
 
 /api/albums | POST | AlbumController | create | Gestion des albums | Récupération et créations d'albums
+(les infos à récup sont : title description classe)
 
 (les infos à récup sont : title description classe)
 
@@ -32,6 +32,7 @@
 /api/photos | GET | PhotoController | index | Gestion des photos | Récupération de photos
 
 /api/photos | POST | PhotoController | create | Gestion des photos | Récupération d'une photo
+(les infos à récup sont : title description url likes album comment)
 
 (les infos à récup sont : title description url likes album comment)
 
@@ -44,6 +45,7 @@
 /api/classes | GET | ClassController | index | Gestion des classes | Récupération des classes
 
 /api/classes | POST | ClassController | create | Gestion des classes | Création de classes
+(les infos à récup sont : name annee_scolaire )
 
 (les infos à récup sont : name annee_scolaire )
 
@@ -56,6 +58,7 @@
 /api/comments| GET | ClassController | index | Gestion des commentaires | Récupération des commentaires
 
 /api/comments| POST | ClassController | create | Gestion des commentaires | Création des commentaires
+(les infos à récups sont : content photo)
 
 (les infos à récups sont : content photo)
 

@@ -11,7 +11,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    #[Route(path: '/api/login', name: 'app_login', methods:['GET'])]
+    #[Route(path: '/api/login', name: 'app_login', methods:['POST'])]
     public function login(AuthenticationUtils $authenticationUtils): JsonResponse
     {
         // if ($this->getUser()) {
@@ -22,10 +22,12 @@ class SecurityController extends AbstractController
         $error = $authenticationUtils->getLastAuthenticationError();
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
+
+        $errorMessage = $error ? 'Veuillez rentrer des identifiants valides' : null;
     
         $data = [
             'last_username' => $lastUsername,
-            'error' => $error ? $error->getMessage() : null
+            'error' => $errorMessage
         ];
 
 

@@ -47,85 +47,15 @@ class UserController extends AbstractController
         $hashedPassword = $passwordHasher->hashPassword($user, $jsonData['password']);
         $user->setPassword($hashedPassword);
 
-        
+        $user->setRoles(['ROLE_USER']);
+
         $entityManager->persist($user);
         $entityManager->flush();
         
         return $this->json(['message' => 'Utilisateur créé avec succès'], 201);
     }
-    //suppression d'un utilisateur
-    #[Route('/api/users/{id}', name: 'api_users_delete', methods: ['DELETE'])]
-    public function delete(int $id, UserRepository $userRepository, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $user = $userRepository->find($id);
-    
-        // Vérifier si l'utilisateur existe
-        if (!$user) {
-            return $this->json(['error' => 'Utilisateur non trouvé.'], 404);
-        }
-    
-        // Supprimer l'utilisateur
-        $entityManager->remove($user);
-        $entityManager->flush();
-    
-        return $this->json(['message' => 'Utilisateur supprimé avec succès'], 200);
-    }
-    //Modifier un utilisateur
-    #[Route('/api/users/{id}', name: 'api_users_edit', methods: ['PUT'])]
-public function edit(int $id, Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher): JsonResponse
-{
-    // Récupérer l'utilisateur à mettre à jour
-    $user = $userRepository->find($id);
-
-    // Vérifier si l'utilisateur existe
-    if (!$user) {
-        return $this->json(['error' => 'Utilisateur non trouvé.'], 404);
     }
 
-    // Récupérer les données JSON de la requête
-    $jsonData = json_decode($request->getContent(), true);
-
-    // Mettre à jour les propriétés de l'utilisateur
-    if (isset($jsonData['lastname'])) {
-        $user->setLastName($jsonData['lastname']);
-    }
-    if (isset($jsonData['firstname'])) {
-        $user->setFirstName($jsonData['firstname']);
-    }
-    if (isset($jsonData['email'])) {
-        $user->setEmail($jsonData['email']);
-    }
-    if (isset($jsonData['password'])) {
-        // Vous pouvez choisir de hasher le nouveau mot de passe ici si nécessaire
-        $hashedPassword = $passwordHasher->hashPassword($user, $jsonData['password']);
-        $user->setPassword($hashedPassword);
-    }
-
-    // Persistez les changements dans la base de données
-    $entityManager->flush();
-
-    // Retournez une réponse JSON indiquant le succès de l'opération
-    return $this->json(['message' => 'Utilisateur mis à jour avec succès'], 200);
-}
-    }
-
-    // #[Route('/{id<\d+>}', name: 'app_back_movie_delete', methods: ['POST'])]
-    // public function delete(Request $request, Movie $movie, EntityManagerInterface $entityManager): Response
-    // {
-    //     if ($this->isCsrfTokenValid('delete'.$movie->getId(), $request->request->get('_token'))) {
-    //         $entityManager->remove($movie);
-    //         $entityManager->flush();
-
-    //         // on prépare un message flash
-    //         // REFER : https://symfony.com/doc/current/session.html#flash-messages
-    //         $this->addFlash(
-    //             'success',
-    //             '<strong>' . $movie->getTitle() . '</strong> a été supprimé.'
-    //         );
-    //     }
-
-    //     return $this->redirectToRoute('app_back_movie_index', [], Response::HTTP_SEE_OTHER);
-    // }
 
     // public function buildForm(FormBuilderInterface $builder, array $options): void
     // {
