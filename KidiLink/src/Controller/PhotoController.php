@@ -3,6 +3,7 @@ namespace App\Controller;
 use App\Entity\Album;
 use App\Entity\Photo;
 use App\Entity\Comment;
+use App\Repository\UserRepository;
 use App\Repository\PhotoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,6 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 class PhotoController extends AbstractController
 {
     #[Route('/api/photos', name: 'api_photos', methods: ['GET'])]
@@ -29,7 +31,7 @@ class PhotoController extends AbstractController
      $jsonData = json_decode($request->getContent(), true);
      // Valider les données (ex: vérifier si les champs requis sont présents)
      if (!isset($jsonData['title'], $jsonData['description'], $jsonData['url'], $jsonData['likes'], $jsonData['album'], $jsonData['comment'])) {
-         return $this->json(['error' => 'Les champs Title, Description, Url et Likes sont requis.'], 400);
+         return $this->json(['error' => 'Les champs Title, Description, Url, Likes, album et comment sont requis.'], 400);
      }
     // Validate URL
     if (!filter_var($jsonData['url'], FILTER_VALIDATE_URL)) {
@@ -59,6 +61,24 @@ if (isset($jsonData['comment'])) {
     $entityManager->persist($photo);
     $entityManager->flush();
     // retourner les infos au format json
-         return $this->json(['message' => 'Commentaire créé avec succès'], 201);
+         return $this->json(['message' => 'Photo créée avec succès'], 201);
      }
+
+         //suppression d'une photo
+    #[Route('/api/photos/{id}', name: 'api_photos_delete', methods: ['DELETE'])]
+    public function delete(int $id, PhotoRepository $photoRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $photo = $photoRepository->find($id);
+    
+        // Vérifier si la photo existe
+        if (!$photo) {
+            return $this->json(['error' => 'Photo non trouvée.'], 404);
+        }
+    
+        // Supprimer la photo
+        $entityManager->remove($photo);
+        $entityManager->flush();
+    
+        return $this->json(['message' => 'Photo supprimée avec succès'], 200);
+    }
     }

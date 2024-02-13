@@ -14,7 +14,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ClassController extends AbstractController
-{   #[Route('/api/classes', name: 'api_classes', methods: ['GET'])]
+{
+    #[Route('/api/classes', name: 'api_classes', methods: ['GET'])]
     public function index(ClasseRepository $classeRepository): JsonResponse
     {
         //Recup les données pour affichage des classes.
@@ -22,31 +23,44 @@ class ClassController extends AbstractController
         return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
     }
 
-     //création d'une classe
-     // Réaliser sa route en POST
-     #[Route('/api/classes/nouveau', name: 'api_classes_nouveau', methods: ['POST'])]
-     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
-     {
-    // Récupérer les données JSON de la requête
-     $jsonData = json_decode($request->getContent(), true);
-     
-     // Valider les données (ex: vérifier si les champs requis sont présents)
-     if (!isset($jsonData['name'], $jsonData['annee_scolaire'])) {
-         return $this->json(['error' => 'Les champs name, description et album sont requis.'], 400);
-     }
+    //création d'une classe
+    // Réaliser sa route en POST
+    #[Route('/api/classes/nouveau', name: 'api_classes_nouveau', methods: ['POST'])]
+    public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Récupérer les données JSON de la requête
+        $jsonData = json_decode($request->getContent(), true);
 
-         $classe = new Classe();
-         $classe->setName($jsonData['name']);
-         $classe->setAnneeScolaire($jsonData['annee_scolaire']);
+        // Valider les données (ex: vérifier si les champs requis sont présents)
+        if (!isset($jsonData['name'], $jsonData['annee_scolaire'])) {
+            return $this->json(['error' => 'Les champs name, description et album sont requis.'], 400);
+        }
 
- // COMMIT EN PUSH SUR LA BDD
-    $entityManager->persist($classe);
-    $entityManager->flush();
-    // retourner les infos au format json
-         return $this->json(['message' => 'La classe est créée avec succès'], 201);
-     }
+        $classe = new Classe();
+        $classe->setName($jsonData['name']);
+        $classe->setAnneeScolaire($jsonData['annee_scolaire']);
 
+        // COMMIT EN PUSH SUR LA BDD
+        $entityManager->persist($classe);
+        $entityManager->flush();
+        // retourner les infos au format json
+        return $this->json(['message' => 'La classe est créée avec succès'], 201);
     }
+    //suppression d'une classe
+    #[Route('/api/classes/{id}', name: 'api_classes_delete', methods: ['DELETE'])]
+    public function delete(int $id, ClasseRepository $classeRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $classe = $classeRepository->find($id);
 
+        // Vérifier si la classe existe
+        if (!$classe) {
+            return $this->json(['error' => 'Classe non trouvée.'], 404);
+        }
 
+        // Supprimer la classe
+        $entityManager->remove($classe);
+        $entityManager->flush();
 
+        return $this->json(['message' => 'Classe supprimée avec succès'], 200);
+    }
+}

@@ -38,7 +38,7 @@ class SecurityController extends AbstractController
         $session->invalidate();
 
         //TODO IL faut renseigner la route de redirection valide, à voir avec le FRONT
-        return $this->redirectToRoute('api_home');
+        return $this->redirectToRoute('/');
         // throw new \LogicException('Veuillez entrez un utilisateur ou mot de passe valide');
     }
     

@@ -30,7 +30,7 @@ class Comment
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?Photo $photo = null;
 
     //Fonction construct pour formater les dates de créations et de modifications.
