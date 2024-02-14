@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +26,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/api/login', name: 'app_login', methods:['POST'])]
-    public function login(Request $request, AuthenticationUtils $authenticationUtils): JsonResponse
+    public function login(Request $request, AuthenticationUtils $authenticationUtils, UserRepository $userRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
@@ -38,15 +39,14 @@ class SecurityController extends AbstractController
         }
 
         // Récupération de l'utilisateur depuis la base de données
-        $userRepository = $this->entityManager->getRepository(User::class);
-        $user = $userRepository->findOneBy(['email' => $email]);
+         $user = $userRepository->findOneBy(['email' => $email]);
 
         if (!$user || !$this->passwordHasher->isPasswordValid($user, $password)) {
             return new JsonResponse(['error' => 'Email ou mot de passe incorrect'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
         // Connexion réussie, retourner les informations de l'utilisateur
-        return new JsonResponse(['username' => $user->getUsername()], JsonResponse::HTTP_OK);
+        return new JsonResponse(['username' => $user->getUserIdentifier()], JsonResponse::HTTP_OK);
     }
 
     #[Route(path: '/api/logout', name: 'app_logout')]
@@ -54,7 +54,6 @@ class SecurityController extends AbstractController
     {
         $session->invalidate();
 
-        //TODO Il faut renseigner la route de redirection valide, à voir avec le FRONT
-        return $this->redirectToRoute('/admin/users');
+        return $this->redirectToRoute('/');
     }
 }
