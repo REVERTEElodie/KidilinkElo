@@ -2,7 +2,7 @@
 
 namespace App\Security;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -44,13 +44,8 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-            return new RedirectResponse($targetPath);
-        }
-
-        // For example:
-         return new RedirectResponse($this->urlGenerator->generate('api_home'));
-        //throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        // Connexion réussie, retourne une réponse JSON avec code 200 et le message
+        return new JsonResponse(['message' => 'Connexion réussie'], JsonResponse::HTTP_OK);
     }
 
     protected function getLoginUrl(Request $request): string

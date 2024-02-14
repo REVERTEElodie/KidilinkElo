@@ -3,18 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Login Form</title>
 </head>
 <body>
-  <button>Charger les données</button>
+  <h2>Login Form</h2>
+  <form id="loginForm" method="post">
+    <label for="email">Email:</label><br>
+    <input type="text" id="email" name="email"><br>
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password"><br><br>
+    <button type="submit">Submit</button>
+  </form>
 
   <script>
-    document.querySelector('button').addEventListener('click', function() {
-      fetch('http://127.0.0.1:8000/api/login') // modifier par votre endpoint
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-        });
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Empêche le formulaire d'être envoyé via un chargement de page
+
+      // Récupère les valeurs des champs email et password
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      // Envoie une requête POST à l'endpoint /api/login
+      fetch("http://127.0.0.1:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: email, password: password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); // Affiche la réponse JSON dans la console
+      })
+      .catch(error => {
+        console.error("Error:", error); // Affiche les erreurs éventuelles dans la console
+      });
     });
   </script>
 </body>
