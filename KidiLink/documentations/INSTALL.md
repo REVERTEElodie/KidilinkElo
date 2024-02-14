@@ -77,3 +77,27 @@ Pour lancer le serveur : taper dans la ligne de commande :
 php-S 127.0.0.1:8000 -t public
 
 ```
+
+Pouvoir récupérer et générer les clés public / privé.
+
+```bash
+
+php bin/console lexik:jwt:generate-keypair
+
+```
+
+## config/packages/security.yaml
+access_control:
+    - { path: ^/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/api/me/classes, roles: IS_AUTHENTICATED_FULLY }
+
+# #[Route('/api/me/classes', methods:['GET'])]
+public function getParentClasses() {
+    // Je peux récupérer l'utilisateur courant via
+    $user = $this->getUser();
+
+    $classes = $user->getClasses();
+
+   // return json response etc.
+}
+
