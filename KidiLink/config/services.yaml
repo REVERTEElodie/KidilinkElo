@@ -19,6 +19,11 @@ services:
       - "../src/DependencyInjection/"
       - "../src/Entity/"
       - "../src/Kernel.php"
+    # config/services.yaml
+  acme_api.event.authentication_success_listener:
+    class: App\EventListener\AuthenticationSuccessListener
+    tags:
+      - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
 
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones

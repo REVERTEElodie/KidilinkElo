@@ -25,11 +25,11 @@ class SecurityController extends AbstractController
         $this->passwordHasher = $passwordHasher;
     }
 
-    #[Route(path: '/api/login', name: 'app_login', methods:['POST'])]
+    #[Route(path: '/login', name: 'app_login', methods:['POST'])]
     public function login(Request $request, AuthenticationUtils $authenticationUtils, UserRepository $userRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-
+        
         $email = $data['email'] ?? null;
         $password = $data['password'] ?? null;
 
@@ -57,3 +57,5 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute('/');
     }
 }
+
+//reprendre la version qui ne retourner pas de json
