@@ -57,4 +57,9 @@ class SecurityController extends AbstractController
         //TODO Il faut renseigner la route de redirection valide, à voir avec le FRONT
         return $this->redirectToRoute('/admin/users');
     }
+<<<<<<< HEAD
 }
+=======
+    
+}
+>>>>>>> 9868947c2da562bf577251fb34db571f231b5816
