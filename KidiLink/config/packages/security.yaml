@@ -16,6 +16,10 @@ security:
         check_path: /api/login_check
         success_handler: lexik_jwt_authentication.handler.authentication_success
         failure_handler: lexik_jwt_authentication.handler.authentication_failure
+    api:
+      pattern:   ^/api
+      stateless: true
+      jwt: ~
 
     main:
       lazy: true
@@ -33,8 +37,10 @@ security:
         always_remember_me: true
 
   access_control:
-    - { path: ^/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/albums, roles: IS_AUTHENTICATED_FULLY }
+    - { path: ^/api/login_check, roles:  PUBLIC_ACCESS }
+    # example attention c'est l un ou l'autre et pas les deux
+    - { path: ^/api/me/classes-managed, roles: ROLE_MANAGER }
+    - { path: ^/api/me, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
   security:

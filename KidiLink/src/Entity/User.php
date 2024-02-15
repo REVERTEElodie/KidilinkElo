@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -35,6 +37,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     #[Groups(['get_users_collection', 'get_user_item'])]
     private ?string $lastname = null;
+
+    #[ORM\OneToMany(mappedBy: 'manager', targetEntity: Classe::class )]
+    private Collection $classesManaged;
+
+    #[ORM\ManyToMany(targetEntity: Classe::class, inversedBy: 'parents')]
+    private Collection $classes;
+
+    public function __construct()
+    {
+        $this->classesManaged = new ArrayCollection();
+        $this->classes = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -112,4 +126,57 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     // Si vous avez besoin d'accéder au mot de passe en clair, implémentez les méthodes
     // getPlainPassword() et setPlainPassword() en conséquence.
 
+    /**
+     * @return Collection<int, Classe>
+     */
+    public function getClassesManaged(): Collection
+    {
+        return $this->classesManaged;
+    }
+
+    public function addClassesManaged(Classe $classesManaged): static
+    {
+        if (!$this->classesManaged->contains($classesManaged)) {
+            $this->classesManaged->add($classesManaged);
+            $classesManaged->setManager($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClassesManaged(Classe $classesManaged): static
+    {
+        if ($this->classesManaged->removeElement($classesManaged)) {
+            // set the owning side to null (unless already changed)
+            if ($classesManaged->getManager() === $this) {
+                $classesManaged->setManager(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Classe>
+     */
+    public function getClasses(): Collection
+    {
+        return $this->classes;
+    }
+
+    public function addClass(Classe $class): static
+    {
+        if (!$this->classes->contains($class)) {
+            $this->classes->add($class);
+        }
+
+        return $this;
+    }
+
+    public function removeClass(Classe $class): static
+    {
+        $this->classes->removeElement($class);
+
+        return $this;
+    }
 }

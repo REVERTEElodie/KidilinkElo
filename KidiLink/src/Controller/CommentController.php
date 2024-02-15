@@ -14,7 +14,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CommentController extends AbstractController
-{
+{   
+    //Afficher tous les commentaires
     #[Route('/api/comments', name: 'api_comments', methods: ['GET'])]
     public function index(CommentRepository $commentRepository): JsonResponse
     {
@@ -29,22 +30,22 @@ class CommentController extends AbstractController
     {
         // Récupérer les données JSON de la requête
         $jsonData = json_decode($request->getContent(), true);
-        
+
         // Valider les données (ex: vérifier si les champs requis sont présents)
         if (!isset($jsonData['content'], $jsonData['photo'])) {
             return $this->json(['error' => 'Le champ Content est requis.'], 400);
         }
-        
+
         // Gérer les clés étrangères
         // Récupérer la photo par son ID
         $photoId = $jsonData['photo'];
         $photo = $entityManager->getRepository(Photo::class)->find($photoId);
-        
+
         // Vérifier si la photo existe
         if (!$photo) {
             return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);
         }
-        
+
         // Créer un nouveau commentaire
         $comment = new Comment();
         $comment->setContent($jsonData['content']);
@@ -53,27 +54,26 @@ class CommentController extends AbstractController
         // Enregistrer le commentaire
         $entityManager->persist($comment);
         $entityManager->flush();
-        
+
         // Retourner les informations au format JSON
         return $this->json(['message' => 'Le commentaire a été ajouté avec succès'], 201);
     }
 
-             //suppression d'un commentaire
-             #[Route('/api/comments/{id}', name: 'api_comments_delete', methods: ['DELETE'])]
-             public function delete(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
-             {
-                 $comment = $commentRepository->find($id);
-             
-                 // Vérifier si le commentaire existe
-                 if (!$comment) {
-                     return $this->json(['error' => 'Commentaire non trouvée.'], 404);
-                 }
-             
-                 // Supprimer le commentaire
-                 $entityManager->remove($comment);
-                 $entityManager->flush();
-             
-                 return $this->json(['message' => 'Commentaire supprimé avec succès'], 200);
-             }
-    
+    //suppression d'un commentaire
+    #[Route('/api/comments/{id}', name: 'api_comments_delete', methods: ['DELETE'])]
+    public function delete(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $comment = $commentRepository->find($id);
+
+        // Vérifier si le commentaire existe
+        if (!$comment) {
+            return $this->json(['error' => 'Commentaire non trouvée.'], 404);
+        }
+
+        // Supprimer le commentaire
+        $entityManager->remove($comment);
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Commentaire supprimé avec succès'], 200);
+    }
 }

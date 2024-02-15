@@ -38,6 +38,7 @@ class Classe
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
         $this->albums = new ArrayCollection();
+        $this->parents = new ArrayCollection();
     }
 
     #[ORM\Column]
@@ -45,6 +46,13 @@ class Classe
 
     #[ORM\OneToMany(mappedBy: 'classe', targetEntity: Album::class)]
     private Collection $albums;
+
+    #[ORM\ManyToOne(inversedBy: 'classesManaged')]
+    #[ORM\JoinColumn(nullable: true, onDelete: "CASCADE")]
+    private ?User $manager = null;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'classes')]
+    private Collection $parents;
 
 
     public function getId(): int
@@ -125,6 +133,45 @@ class Classe
             if ($album->getClasse() === $this) {
                 $album->setClasse(null);
             }
+        }
+
+        return $this;
+    }
+
+    public function getManager(): ?User
+    {
+        return $this->manager;
+    }
+
+    public function setManager(?User $manager): static
+    {
+        $this->manager = $manager;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getParents(): Collection
+    {
+        return $this->parents;
+    }
+
+    public function addParent(User $parent): static
+    {
+        if (!$this->parents->contains($parent)) {
+            $this->parents->add($parent);
+            $parent->addClass($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParent(User $parent): static
+    {
+        if ($this->parents->removeElement($parent)) {
+            $parent->removeClass($this);
         }
 
         return $this;

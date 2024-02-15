@@ -14,7 +14,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ClassController extends AbstractController
-{
+{ 
+    //Afficher toutes les classes
     #[Route('/api/classes', name: 'api_classes', methods: ['GET'])]
     public function index(ClasseRepository $classeRepository): JsonResponse
     {
@@ -62,5 +63,29 @@ class ClassController extends AbstractController
         $entityManager->flush();
 
         return $this->json(['message' => 'Classe supprimée avec succès'], 200);
+    }
+
+    // Retourner les classes du parent
+    #[Route('/api/me/classes', name: 'api_classes_parents', methods: ['GET'])]
+    public function userClasses(ClasseRepository $classeRepository): JsonResponse
+    {
+        /** @var App\Entity\User $user */
+        $user = $this->getUser();
+
+        $classes = $user->getClasses();
+        
+        return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
+    }
+
+    // Retourner la ou les classes de l'encadrant
+    #[Route('/api/me/classes-managed', name: 'api_classes_managed', methods: ['GET'])]
+    public function managerClasses(ClasseRepository $classeRepository): JsonResponse
+    {
+        /** @var App\Entity\User $user */
+        $user = $this->getUser();
+
+        $classes = $user->getClassesManaged();
+        
+        return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
     }
 }

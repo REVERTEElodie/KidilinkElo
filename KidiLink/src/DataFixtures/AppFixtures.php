@@ -26,7 +26,7 @@ class AppFixtures extends Fixture
     }
 
     public function load(ObjectManager $manager): void
-    {   
+    {
         //Données des utilisateurs
         $user = new User();
         $user->setFirstname('kiki');
@@ -40,40 +40,138 @@ class AppFixtures extends Fixture
         );
         $user->setPassword($hashedPassword);
         $manager->persist($user);
-        
+
+        $persons = [
+            [
+                'firstname' => 'Thierry',
+                'role' => 'ROLE_MANAGER'
+            ],
+            [
+                'firstname' => 'Stéphanie',
+                'role' => 'ROLE_MANAGER'
+            ],
+            [
+                'firstname' => 'Laurent',
+                'role' => 'ROLE_MANAGER'
+            ],
+            [
+                'firstname' => 'Bernard',
+                'role' => 'ROLE_MANAGER'
+            ],
+            [
+                'firstname' => 'Josiane',
+                'role' => 'ROLE_USER'
+            ],
+            [
+                'firstname' => 'Michel',
+                'role' => 'ROLE_USER'
+            ],
+            [
+                'firstname' => 'Robert',
+                'role' => 'ROLE_USER'
+            ],
+            [
+                'firstname' => 'Marcel',
+                'role' => 'ROLE_USER'
+            ],
+            [
+                'firstname' => 'Robin',
+                'role' => 'ROLE_USER'
+            ],
+            [
+                'firstname' => 'Mehdi',
+                'role' => 'ROLE_USER'
+            ],
+            [
+                'firstname' => 'Patrick',
+                'role' => 'ROLE_USER'
+            ],
+            [
+                'firstname' => 'Elodie',
+                'role' => 'ROLE_USER'
+            ],
+        ];
+
+        $parentsGenerated = [];
+        $managersGenerated = [];
+        foreach ($persons as $person) {
+            $newPerson = new User();
+            $newPerson->setFirstname($person['firstname']);
+            if ($person['role'] === 'ROLE_MANAGER') {
+                $email = strtolower($person['firstname']) . '@manager.com';
+                $password = "manager";
+                $newPerson->setLastname('Nom Manager');
+            } else {
+                $email = strtolower($person['firstname']) . '@parent.com';
+                $password = "parent";
+                $newPerson->setLastname('Nom Parent');
+            }
+            $newPerson->setEmail($email);
+            $newPerson->setRoles([$person['role']]);
+            $hashedPassword = $this->passwordHasher->hashPassword(
+                $newPerson,
+                $password
+            );
+            $newPerson->setPassword($hashedPassword);
+            $manager->persist($newPerson);
+
+            if ($person['role'] === 'ROLE_MANAGER') {
+                $managersGenerated[] = $newPerson;
+            } else {
+                $parentsGenerated[] = $newPerson;
+            }
+        }
+
+        $manager->flush();
+
+        $classesName = ['Petite section', 'Moyenne section', 'Grande section', 'CP', 'CE1', 'CE2', 'CM1', 'CM2'];
         $classes = [];
-        $classCount = 10;
+        $classCount = count($classesName);
+        
         //Données pour les classes
-        for ($i=0; $i < 10 ; $i++) { 
+        foreach($classesName as $classeName) {
             $classe = new Classe();
-            $classe->setName($this->faker->word());
+            $classe->setName($classeName);
             $classe->setAnneeScolaire($this->faker->year());
+
+            // Ajouter ou pas un manager
+            $randomManagerIndex = array_rand($managersGenerated);
+            $classe->setManager($managersGenerated[$randomManagerIndex]);
+
+            // Ajouter quelques parents
+            $randomNb = rand(0, 4);
+            for ($j = 0; $j < $randomNb; $j++) {
+                $randomParentIndex = array_rand($parentsGenerated);
+
+                $classe->addParent($parentsGenerated[$randomParentIndex]);
+            }
+
             $manager->persist($classe);
             $classes[] = $classe;
         }
-            $manager->flush();
+        $manager->flush();
 
         $photos = [];
         $albums = [];
         $albumsCounts =  5;
         $photoCount = 200;
         //Données pour les Albums
-        for ($i=0; $i < $albumsCounts ; $i++) { 
+        for ($i = 0; $i < $albumsCounts; $i++) {
             $album = new Album();
             $album->setTitle($this->faker->word());
             $album->setDescription($this->faker->sentence());
             //ici
-            $album->setClasse($classes[floor($i/($albumsCounts/$classCount))]);
+            $album->setClasse($classes[floor($i / ($albumsCounts / $classCount))]);
             $manager->persist($album);
             $albums[] = $album;
         }
 
         $manager->flush();
-        
+
         $photos = [];
         $photoCount = 200;
         //Données pour les Photos
-        for ($i=0; $i < $photoCount ; $i++) { 
+        for ($i = 0; $i < $photoCount; $i++) {
             $photo = new Photo();
             $photo->setTitle($this->faker->word());
             $photo->setDescription($this->faker->sentence());
@@ -81,25 +179,23 @@ class AppFixtures extends Fixture
             // albums de 0 à 19
             // si je divise par 10 mon $i par exemple 199 j'obtient 19.9 et que j'arrondis à l'entier inférieur j'ai 19
             // photoCount / alBumCount
-            $photo->setAlbum($albums[floor($i/($photoCount/$albumsCounts))]);
+            $photo->setAlbum($albums[floor($i / ($photoCount / $albumsCounts))]);
             $manager->persist($photo);
-            $photos[]= $photo;
-            
+            $photos[] = $photo;
         }
-         $manager->flush();
+        $manager->flush();
 
         $commentCount = 30;
         //Données por les commentaires
-        for ($i=0; $i < $commentCount ; $i++) { 
+        for ($i = 0; $i < $commentCount; $i++) {
             $comment = new Comment();
             $comment->setContent($this->faker->sentence());
             if ($i < count($photos)) {
                 $comment->setPhoto($photos[$i]);
             }
-            $manager->persist($comment);             
-
+            $manager->persist($comment);
         }
-        
+
         $manager->flush();
     }
 }
