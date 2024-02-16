@@ -28,20 +28,20 @@ class CommentController extends AbstractController
     #[Route('/api/comments/{id<\d+>}', name: 'api_comments_show', methods: ['GET'])]
     public function show(int $id, CommentRepository $commentRepository): JsonResponse
     {
-        // Récupérer l'utilisateur par son ID
+        // Récupérer le commentaire par son ID
         $comment = $commentRepository->find($id);
     
-        // Vérifier si l'utilisateur existe
+        // Vérifier si le commentaire existe
         if (!$comment) {
             return $this->json(['error' => 'Commentaire inexistant.'], 404);
         }
     
-        // Retourner les données de l'utilisateur au format JSON
-        return $this->json($comment, 200, [], ['groups' => 'get_user_item']);
+        // Retourner les données du commentaire au format JSON
+        return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
     }
 
     // Création d'un commentaire
-    #[Route('/api/comments/nouveau', name: 'api_comments_nouveau', methods: ['POST'])]
+    #[Route('/api/comments/new', name: 'api_comments_nouveau', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer les données JSON de la requête
@@ -49,7 +49,7 @@ class CommentController extends AbstractController
 
         // Valider les données (ex: vérifier si les champs requis sont présents)
         if (!isset($jsonData['content'], $jsonData['photo'])) {
-            return $this->json(['error' => 'Le champ Content est requis.'], 400);
+            return $this->json(['error' => 'Le champ Content et photo sont requis.'], 400);
         }
 
         // Gérer les clés étrangères
@@ -103,7 +103,7 @@ public function update(int $id, Request $request, CommentRepository $commentRepo
 
 
     //suppression d'un commentaire
-    #[Route('/api/comments/{id}', name: 'api_comments_delete', methods: ['DELETE'])]
+    #[Route('/api/comments/{id}/delete', name: 'api_comments_delete', methods: ['DELETE'])]
     public function delete(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $comment = $commentRepository->find($id);

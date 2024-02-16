@@ -41,7 +41,7 @@ public function show(int $id, UserRepository $userRepository): JsonResponse
 
     
     // Création d'un utilisateur
-    #[Route('/api/users/nouveau', name: 'api_users_nouveau', methods: ['POST'])]
+    #[Route('/api/users/new', name: 'api_users_new', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): JsonResponse 
     {
         // Récupérer les données JSON de la requête
@@ -116,7 +116,7 @@ public function update(int $id, Request $request, UserRepository $userRepository
 }
 
     //suppression d'un utilisateur
-    #[Route('/api/users/{id}', name: 'api_users_delete', methods: ['DELETE'])]
+    #[Route('/api/users/{id}/delete', name: 'api_users_delete', methods: ['DELETE'])]
     public function delete(int $id, UserRepository $userRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $user = $userRepository->find($id);

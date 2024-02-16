@@ -30,27 +30,27 @@ class PhotoController extends AbstractController
        #[Route('/api/photos/{id<\d+>}', name: 'api_photos_show', methods: ['GET'])]
        public function show(int $id, PhotoRepository $photoRepository): JsonResponse
        {
-           // Récupérer l'utilisateur par son ID
+           // Récupérer la photo par son ID
            $photo = $photoRepository->find($id);
        
-           // Vérifier si l'utilisateur existe
+           // Vérifier si la photo existe
            if (!$photo) {
                return $this->json(['error' => 'Photo inexistante.'], 404);
            }
        
-           // Retourner les données de l'utilisateur au format JSON
-           return $this->json($photo, 200, [], ['groups' => 'get_user_item']);
+           // Retourner les données de la photo au format JSON
+           return $this->json($photo, 200, [], ['groups' => 'get_photo_item']);
        }
 
     //création d'une photo
-    #[Route('/api/photos/nouveau', name: 'api_photos_nouveau', methods: ['POST'])]
+    #[Route('/api/photos/new', name: 'api_photos_nouveau', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
 
         $jsonData = json_decode($request->getContent(), true);
         // Valider les données (ex: vérifier si les champs requis sont présents)
-        if (!isset($jsonData['title'], $jsonData['description'], $jsonData['url'], $jsonData['likes'], $jsonData['album'], $jsonData['comment'])) {
-            return $this->json(['error' => 'Les champs Title, Description, Url, Likes, album et comment sont requis.'], 400);
+        if (!isset($jsonData['title'], $jsonData['description'], $jsonData['url'], $jsonData['likes'], $jsonData['album'])) {
+            return $this->json(['error' => 'Les champs Title, Description, Url, Likes, album  sont requis.'], 400);
         }
         // Validate URL
         if (!filter_var($jsonData['url'], FILTER_VALIDATE_URL)) {
@@ -71,11 +71,11 @@ class PhotoController extends AbstractController
         $photo->setLikes($jsonData['likes']);
         $photo->setAlbum($album);
         // Ajouter le commentaire s'il est présent
-        if (isset($jsonData['comment'])) {
+        // if (isset($jsonData['comment'])) {
 
-            $comment = new Comment();
-            $comment->setContent($jsonData['comment']);
-        }
+        //     $comment = new Comment();
+        //     $comment->setContent($jsonData['comment']);
+        // }
 
         $entityManager->persist($photo);
         $entityManager->flush();
@@ -125,7 +125,7 @@ class PhotoController extends AbstractController
         }
 
     //suppression d'une photo
-    #[Route('/api/photos/{id}', name: 'api_photos_delete', methods: ['DELETE'])]
+    #[Route('/api/photos/{id}/delete', name: 'api_photos_delete', methods: ['DELETE'])]
     public function delete(int $id, PhotoRepository $photoRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $photo = $photoRepository->find($id);
