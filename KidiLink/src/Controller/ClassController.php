@@ -24,6 +24,22 @@ class ClassController extends AbstractController
         return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
     }
 
+    //Afficher une photo d'après son ID
+    #[Route('/api/classes/{id<\d+>}', name: 'api_classes_show', methods: ['GET'])]
+    public function show(int $id, ClasseRepository $classeRepository): JsonResponse
+    {
+        // Récupérer l'utilisateur par son ID
+        $classe = $classeRepository->find($id);
+    
+        // Vérifier si l'utilisateur existe
+        if (!$classe) {
+            return $this->json(['error' => 'Utilisateur inexistant.'], 404);
+        }
+    
+        // Retourner les données de l'utilisateur au format JSON
+        return $this->json($classe, 200, [], ['groups' => 'get_user_item']);
+    }
+
     //création d'une classe
     // Réaliser sa route en POST
     #[Route('/api/classes/nouveau', name: 'api_classes_nouveau', methods: ['POST'])]

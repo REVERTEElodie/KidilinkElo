@@ -22,6 +22,23 @@ class UserController extends AbstractController
         $users = $userRepository->findAll();
         return $this->json($users, 200, [], ['groups' => 'get_users_collection', 'get_user_item']);
     }
+
+    //Afficher un utilisateur d'après son ID
+    #[Route('/api/users/{id<\d+>}', name: 'api_users_show', methods: ['GET'])]
+public function show(int $id, UserRepository $userRepository): JsonResponse
+{
+    // Récupérer l'utilisateur par son ID
+    $user = $userRepository->find($id);
+
+    // Vérifier si l'utilisateur existe
+    if (!$user) {
+        return $this->json(['error' => 'Utilisateur inexistant.'], 404);
+    }
+
+    // Retourner les données de l'utilisateur au format JSON
+    return $this->json($user, 200, [], ['groups' => 'get_user_item']);
+}
+
     
     // Création d'un utilisateur
     #[Route('/api/users/nouveau', name: 'api_users_nouveau', methods: ['POST'])]

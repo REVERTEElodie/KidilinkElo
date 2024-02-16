@@ -24,6 +24,22 @@ class AlbumController extends AbstractController
         return $this->json($albums, 200, [], ['groups' => 'get_albums_collection', 'get_album_item']);
     }
 
+    //Afficher un album d'après son ID
+    #[Route('/api/albums/{id<\d+>}', name: 'api_albums_show', methods: ['GET'])]
+    public function show(int $id, AlbumRepository $albumRepository): JsonResponse
+    {
+        // Récupérer l'utilisateur par son ID
+        $album = $albumRepository->find($id);
+    
+        // Vérifier si l'utilisateur existe
+        if (!$album) {
+            return $this->json(['error' => 'Album inexistant.'], 404);
+        }
+    
+        // Retourner les données de l'utilisateur au format JSON
+        return $this->json($album, 200, [], ['groups' => 'get_user_item']);
+    }
+
     //création d'un album
     #[Route('/api/albums/nouveau', name: 'api_albums_nouveau', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse

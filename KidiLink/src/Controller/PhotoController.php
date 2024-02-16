@@ -26,6 +26,22 @@ class PhotoController extends AbstractController
         return $this->json($photos, 200, [], ['groups' => 'get_photos_collection', 'get_photos_item']);
     }
 
+       //Afficher une photo d'après son ID
+       #[Route('/api/photos/{id<\d+>}', name: 'api_photos_show', methods: ['GET'])]
+       public function show(int $id, PhotoRepository $photoRepository): JsonResponse
+       {
+           // Récupérer l'utilisateur par son ID
+           $photo = $photoRepository->find($id);
+       
+           // Vérifier si l'utilisateur existe
+           if (!$photo) {
+               return $this->json(['error' => 'Photo inexistante.'], 404);
+           }
+       
+           // Retourner les données de l'utilisateur au format JSON
+           return $this->json($photo, 200, [], ['groups' => 'get_user_item']);
+       }
+
     //création d'une photo
     #[Route('/api/photos/nouveau', name: 'api_photos_nouveau', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse

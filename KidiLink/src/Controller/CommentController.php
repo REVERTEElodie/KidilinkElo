@@ -24,6 +24,22 @@ class CommentController extends AbstractController
         return $this->json($comments, 200, [], ['groups' => 'get_comments_collection', 'get_comment_item']);
     }
 
+    //Afficher une photo d'après son ID
+    #[Route('/api/comments/{id<\d+>}', name: 'api_comments_show', methods: ['GET'])]
+    public function show(int $id, CommentRepository $commentRepository): JsonResponse
+    {
+        // Récupérer l'utilisateur par son ID
+        $comment = $commentRepository->find($id);
+    
+        // Vérifier si l'utilisateur existe
+        if (!$comment) {
+            return $this->json(['error' => 'Commentaire inexistant.'], 404);
+        }
+    
+        // Retourner les données de l'utilisateur au format JSON
+        return $this->json($comment, 200, [], ['groups' => 'get_user_item']);
+    }
+
     // Création d'un commentaire
     #[Route('/api/comments/nouveau', name: 'api_comments_nouveau', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
