@@ -47,6 +47,36 @@ class ClassController extends AbstractController
         // retourner les infos au format json
         return $this->json(['message' => 'La classe est créée avec succès'], 201);
     }
+
+    // Mise à jour d'une classe
+    #[Route('/api/classes/{id}/edit', name: 'api_classes_update', methods: ['PUT', 'PATCH'])]
+    public function update(int $id, Request $request, ClasseRepository $classeRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Récupérer la classe à mettre à jour
+        $classe = $classeRepository->find($id);
+
+        // Vérifier si la classe existe
+        if (!$classe) {
+            return $this->json(['error' => 'Classe non trouvée.'], 404);
+        }
+
+        // Récupérer les données JSON de la requête
+        $jsonData = json_decode($request->getContent(), true);
+
+        // Mettre à jour les champs de la classe
+        if (isset($jsonData['name'])) {
+            $classe->setName($jsonData['name']);
+        }
+        if (isset($jsonData['annee_scolaire'])) {
+            $classe->setAnneeScolaire($jsonData['annee_scolaire']);
+        }
+
+        // Enregistrer les modifications
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Classe mise à jour avec succès'], 200);
+    }
+
     //suppression d'une classe
     #[Route('/api/classes/{id}', name: 'api_classes_delete', methods: ['DELETE'])]
     public function delete(int $id, ClasseRepository $classeRepository, EntityManagerInterface $entityManager): JsonResponse
@@ -65,25 +95,32 @@ class ClassController extends AbstractController
         return $this->json(['message' => 'Classe supprimée avec succès'], 200);
     }
 
-    // Retourner les classes du parent
+    // Retourner les classes pour l'utilisateur  parent
+    //le me fait référence à l'utilisateur connecté donc qui a reçu le token. (convention de nommage)
     #[Route('/api/me/classes', name: 'api_classes_parents', methods: ['GET'])]
     public function userClasses(ClasseRepository $classeRepository): JsonResponse
-    {
+    {   
+        //ouvrir le blockcode et y mettre ce code pour permettre l'autocomplétion.
         /** @var App\Entity\User $user */
-        $user = $this->getUser();
 
+        //permet de recueillir les informations de l'utilisateur
+        $user = $this->getUser();
+        
+        //permet de recueillir les infos de la classe selon l'utilisateur (ici parents)
         $classes = $user->getClasses();
         
         return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
     }
 
-    // Retourner la ou les classes de l'encadrant
+    // Retourner la ou les classes de l'utilisateur encadrant
     #[Route('/api/me/classes-managed', name: 'api_classes_managed', methods: ['GET'])]
     public function managerClasses(ClasseRepository $classeRepository): JsonResponse
     {
         /** @var App\Entity\User $user */
+        //permet de recueillir les informations de l'utilisateur
         $user = $this->getUser();
-
+        
+        //permet de recueillir les infos de la classe selon l'utilisateur (ici encadrant)
         $classes = $user->getClassesManaged();
         
         return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);

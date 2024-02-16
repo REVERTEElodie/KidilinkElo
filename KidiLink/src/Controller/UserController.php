@@ -56,6 +56,65 @@ class UserController extends AbstractController
         
         return $this->json(['message' => 'Utilisateur créé avec succès'], 201);
     }
+
+    // Mise à jour d'un utilisateur // voir mettre le PATCH après le PUT ?
+#[Route('/api/users/{id}/edit', name: 'api_users_update', methods: ['PUT'])]
+public function update(int $id, Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): JsonResponse
+{
+    // Récupérer l'utilisateur à mettre à jour
+    $user = $userRepository->find($id);
+
+    // Vérifier si l'utilisateur existe
+    if (!$user) {
+        return $this->json(['error' => 'Utilisateur inexistant.'], 404);
+    }
+
+    // Récupérer les données JSON de la requête
+    $jsonData = json_decode($request->getContent(), true);
+
+    // Mettre à jour les champs de l'utilisateur
+    if (isset($jsonData['firstname'])) {
+        $user->setFirstName($jsonData['firstname']);
+    }
+    if (isset($jsonData['lastname'])) {
+        $user->setLastName($jsonData['lastname']);
+    }
+    if (isset($jsonData['email'])) {
+        $user->setEmail($jsonData['email']);
+    }
+    if (isset($jsonData['password'])) {
+        // Hachage du nouveau mot de passe
+        $hashedPassword = $passwordHasher->hashPassword($user, $jsonData['password']);
+        $user->setPassword($hashedPassword);
+    }
+    if (isset($jsonData['role'])) {
+        // Définition des nouveaux rôles
+        $user->setRoles([$jsonData['role']]);
+    }
+
+    // Enregistrement des modifications
+    $entityManager->flush();
+
+    return $this->json(['message' => 'Utilisateur mis à jour avec succès'], 200);
+}
+
+    //suppression d'un utilisateur
+    #[Route('/api/users/{id}', name: 'api_users_delete', methods: ['DELETE'])]
+    public function delete(int $id, UserRepository $userRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $user = $userRepository->find($id);
+
+        // Vérifier si la photo existe
+        if (!$user) {
+            return $this->json(['error' => 'User inexistant.'], 404);
+        }
+
+        // Supprimer l'utilisateur
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Utilisateur supprimée avec succès'], 200);
+    }
 }
 
 

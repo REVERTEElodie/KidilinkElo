@@ -68,6 +68,46 @@ class PhotoController extends AbstractController
         return $this->json(['message' => 'Photo créée avec succès'], 201);
     }
 
+        // Mise à jour d'une photo
+        #[Route('/api/photos/{id}/edit', name: 'api_photos_update', methods: ['PUT'])]
+        public function update(int $id, Request $request, EntityManagerInterface $entityManager): JsonResponse
+        {
+            $photo = $entityManager->getRepository(Photo::class)->find($id);
+    
+            // Vérifier si la photo existe
+            if (!$photo) {
+                return $this->json(['error' => 'Photo non trouvée.'], 404);
+            }
+    
+            $jsonData = json_decode($request->getContent(), true);
+            // Mettre à jour les champs de la photo si présents dans les données JSON
+            if (isset($jsonData['title'])) {
+                $photo->setTitle($jsonData['title']);
+            }
+            if (isset($jsonData['description'])) {
+                $photo->setDescription($jsonData['description']);
+            }
+            if (isset($jsonData['url'])) {
+                $photo->setUrl($jsonData['url']);
+            }
+            if (isset($jsonData['likes'])) {
+                $photo->setLikes($jsonData['likes']);
+            }
+            // Mettre à jour le commentaire s'il est présent dans les données JSON
+            if (isset($jsonData['comment'])) {
+                $comment = $photo->getComment();
+                if (!$comment) {
+                    $comment = new Comment();
+                    $photo->setComment($comment);
+                }
+                $comment->setContent($jsonData['comment']);
+            }
+    
+            $entityManager->flush();
+    
+            return $this->json(['message' => 'Photo mise à jour avec succès'], 200);
+        }
+
     //suppression d'une photo
     #[Route('/api/photos/{id}', name: 'api_photos_delete', methods: ['DELETE'])]
     public function delete(int $id, PhotoRepository $photoRepository, EntityManagerInterface $entityManager): JsonResponse

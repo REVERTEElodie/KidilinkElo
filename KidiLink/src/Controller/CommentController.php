@@ -59,6 +59,33 @@ class CommentController extends AbstractController
         return $this->json(['message' => 'Le commentaire a été ajouté avec succès'], 201);
     }
 
+    // Mise à jour d'un commentaire
+#[Route('/api/comments/{id}/edit', name: 'api_comments_update', methods: ['PUT'])]
+public function update(int $id, Request $request, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
+{
+    // Récupérer le commentaire à mettre à jour
+    $comment = $commentRepository->find($id);
+
+    // Vérifier si le commentaire existe
+    if (!$comment) {
+        return $this->json(['error' => 'Commentaire inexistant.'], 404);
+    }
+
+    // Récupérer les données JSON de la requête
+    $jsonData = json_decode($request->getContent(), true);
+
+    // Mettre à jour les champs du commentaire
+    if (isset($jsonData['content'])) {
+        $comment->setContent($jsonData['content']);
+    }
+
+    // Enregistrer les modifications
+    $entityManager->flush();
+
+    return $this->json(['message' => 'Commentaire mis à jour avec succès'], 200);
+}
+
+
     //suppression d'un commentaire
     #[Route('/api/comments/{id}', name: 'api_comments_delete', methods: ['DELETE'])]
     public function delete(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
