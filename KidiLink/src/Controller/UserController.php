@@ -14,8 +14,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
+    //--------------------------------------- LES  ROUTES  POUR  L ADMIN -------------------------------------//
     // Affichage des utilisateurs
-    #[Route('/api/users', name: 'api_users', methods: ['GET'])]
+    #[Route('/api/admin/users', name: 'api_admin_users', methods: ['GET'])]
     public function index(UserRepository $userRepository): JsonResponse
     {
         // Récupérer les données pour l'affichage des utilisateurs
@@ -24,7 +25,7 @@ class UserController extends AbstractController
     }
 
     //Afficher un utilisateur d'après son ID
-    #[Route('/api/users/{id<\d+>}', name: 'api_users_show', methods: ['GET'])]
+    #[Route('/api/admin/users/{id<\d+>}', name: 'api_admin_users_show', methods: ['GET'])]
 public function show(int $id, UserRepository $userRepository): JsonResponse
 {
     // Récupérer l'utilisateur par son ID
@@ -41,7 +42,7 @@ public function show(int $id, UserRepository $userRepository): JsonResponse
 
     
     // Création d'un utilisateur
-    #[Route('/api/users/new', name: 'api_users_new', methods: ['POST'])]
+    #[Route('/api/admin/users/new', name: 'api_admin_users_new', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): JsonResponse 
     {
         // Récupérer les données JSON de la requête
@@ -75,7 +76,7 @@ public function show(int $id, UserRepository $userRepository): JsonResponse
     }
 
     // Mise à jour d'un utilisateur // voir mettre le PATCH après le PUT ?
-#[Route('/api/users/{id}/edit', name: 'api_users_update', methods: ['PUT'])]
+#[Route('/api/admin/users/{id}/edit', name: 'api_admin_users_update', methods: ['PUT'])]
 public function update(int $id, Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): JsonResponse
 {
     // Récupérer l'utilisateur à mettre à jour
@@ -116,7 +117,7 @@ public function update(int $id, Request $request, UserRepository $userRepository
 }
 
     //suppression d'un utilisateur
-    #[Route('/api/users/{id}/delete', name: 'api_users_delete', methods: ['DELETE'])]
+    #[Route('/api/admin/users/{id}/delete', name: 'api_admin_users_delete', methods: ['DELETE'])]
     public function delete(int $id, UserRepository $userRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $user = $userRepository->find($id);

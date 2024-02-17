@@ -41,6 +41,7 @@ security:
     # example attention c'est l un ou l'autre et pas les deux
     - { path: ^/api/me/classes-managed, roles: [ROLE_MANAGER, ROLE_ADMIN]}
     - { path: ^/api/me, roles: IS_AUTHENTICATED_FULLY }
+    - { path: ^/api/admin, roles: [ROLE_ADMIN]}
 
 when@test:
   security:

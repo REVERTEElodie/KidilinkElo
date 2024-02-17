@@ -15,8 +15,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class AlbumController extends AbstractController
 {
-
-    #[Route('/api/albums', name: 'api_albums', methods: ['GET'])]
+    //--------------------------------------- LES  ROUTES  POUR  L ADMIN -------------------------------------//
+    //Afficher la liste des albums
+    #[Route('/api/admin/albums', name: 'api_admin_albums', methods: ['GET'])]
     public function index(AlbumRepository $albumRepository): JsonResponse
     {
         // Récupérer les données pour affichage des albums.
@@ -25,7 +26,7 @@ class AlbumController extends AbstractController
     }
 
     //Afficher un album d'après son ID
-    #[Route('/api/albums/{id<\d+>}', name: 'api_albums_show', methods: ['GET'])]
+    #[Route('/api/admin/albums/{id<\d+>}', name: 'api_admin_albums_show', methods: ['GET'])]
     public function show(int $id, AlbumRepository $albumRepository): JsonResponse
     {
         // Récupérer l'album par son ID
@@ -41,7 +42,7 @@ class AlbumController extends AbstractController
     }
 
     //création d'un album
-    #[Route('/api/albums/new', name: 'api_albums_nouveau', methods: ['POST'])]
+    #[Route('/api/admin/albums/new', name: 'api_admin_albums_nouveau', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
 
@@ -86,7 +87,7 @@ class AlbumController extends AbstractController
     }
     
 
-    #[Route('/api/albums/{id}/edit', name: 'api_albums_update', methods: ['PUT'])]
+    #[Route('/api/admin/albums/{id}/edit', name: 'api_admin_albums_update', methods: ['PUT'])]
     public function update(int $id, Request $request, EntityManagerInterface $entityManager, AlbumRepository $albumRepository): JsonResponse
     {
         $jsonData = json_decode($request->getContent(), true);
@@ -129,7 +130,7 @@ class AlbumController extends AbstractController
 
 
     //suppression d'un album
-    #[Route('/api/albums/{id}/delete', name: 'api_albums_delete', methods: ['DELETE'])]
+    #[Route('/api/admin/albums/{id}/delete', name: 'api_admin_albums_delete', methods: ['DELETE'])]
     public function delete(int $id, AlbumRepository $albumRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $album = $albumRepository->find($id);

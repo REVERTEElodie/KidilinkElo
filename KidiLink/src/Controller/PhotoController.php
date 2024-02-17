@@ -16,9 +16,10 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PhotoController extends AbstractController
-{
+{   
+    //--------------------------------------- LES  ROUTES  POUR  L ADMIN -------------------------------------//
     //Afficher toutes les photos
-    #[Route('/api/photos', name: 'api_photos', methods: ['GET'])]
+    #[Route('/api/admin/photos', name: 'api_admin_photos', methods: ['GET'])]
     public function index(PhotoRepository $photoRepository): JsonResponse
     {
 
@@ -27,7 +28,7 @@ class PhotoController extends AbstractController
     }
 
        //Afficher une photo d'après son ID
-       #[Route('/api/photos/{id<\d+>}', name: 'api_photos_show', methods: ['GET'])]
+       #[Route('/api/admin/photos/{id<\d+>}', name: 'api_admin_photos_show', methods: ['GET'])]
        public function show(int $id, PhotoRepository $photoRepository): JsonResponse
        {
            // Récupérer la photo par son ID
@@ -43,7 +44,7 @@ class PhotoController extends AbstractController
        }
 
     //création d'une photo
-    #[Route('/api/photos/new', name: 'api_photos_nouveau', methods: ['POST'])]
+    #[Route('/api/admin/photos/new', name: 'api_admin_photos_new', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
 
@@ -85,7 +86,7 @@ class PhotoController extends AbstractController
     }
 
         // Mise à jour d'une photo
-        #[Route('/api/photos/{id}/edit', name: 'api_photos_update', methods: ['PUT'])]
+        #[Route('/api/admin/photos/{id}/edit', name: 'api_admin_photos_update', methods: ['PUT'])]
         public function update(int $id, Request $request, EntityManagerInterface $entityManager): JsonResponse
         {
             $photo = $entityManager->getRepository(Photo::class)->find($id);
@@ -125,7 +126,7 @@ class PhotoController extends AbstractController
         }
 
     //suppression d'une photo
-    #[Route('/api/photos/{id}/delete', name: 'api_photos_delete', methods: ['DELETE'])]
+    #[Route('/api/admin/photos/{id}/delete', name: 'api_admin_photos_delete', methods: ['DELETE'])]
     public function delete(int $id, PhotoRepository $photoRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $photo = $photoRepository->find($id);

@@ -15,8 +15,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CommentController extends AbstractController
 {   
+    //--------------------------------------- LES  ROUTES  POUR  L ADMIN -------------------------------------//
     //Afficher tous les commentaires
-    #[Route('/api/comments', name: 'api_comments', methods: ['GET'])]
+    #[Route('/api/admin/comments', name: 'api_admin_comments', methods: ['GET'])]
     public function index(CommentRepository $commentRepository): JsonResponse
     {
         // Récupérer les données pour affichage des commentaires.
@@ -25,7 +26,7 @@ class CommentController extends AbstractController
     }
 
     //Afficher une photo d'après son ID
-    #[Route('/api/comments/{id<\d+>}', name: 'api_comments_show', methods: ['GET'])]
+    #[Route('/api/admin/comments/{id<\d+>}', name: 'api_admin_comments_show', methods: ['GET'])]
     public function show(int $id, CommentRepository $commentRepository): JsonResponse
     {
         // Récupérer le commentaire par son ID
@@ -41,7 +42,7 @@ class CommentController extends AbstractController
     }
 
     // Création d'un commentaire
-    #[Route('/api/comments/new', name: 'api_comments_nouveau', methods: ['POST'])]
+    #[Route('/api/admin/comments/new', name: 'api_admin_comments_new', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer les données JSON de la requête
@@ -76,7 +77,7 @@ class CommentController extends AbstractController
     }
 
     // Mise à jour d'un commentaire
-#[Route('/api/comments/{id}/edit', name: 'api_comments_update', methods: ['PUT'])]
+#[Route('/api/admin/comments/{id}/edit', name: 'api_admin_comments_update', methods: ['PUT'])]
 public function update(int $id, Request $request, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
 {
     // Récupérer le commentaire à mettre à jour
@@ -103,7 +104,7 @@ public function update(int $id, Request $request, CommentRepository $commentRepo
 
 
     //suppression d'un commentaire
-    #[Route('/api/comments/{id}/delete', name: 'api_comments_delete', methods: ['DELETE'])]
+    #[Route('/api/admin/comments/{id}/delete', name: 'api_admin_comments_delete', methods: ['DELETE'])]
     public function delete(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $comment = $commentRepository->find($id);
