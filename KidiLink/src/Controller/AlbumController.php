@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Album;
 use App\Entity\Photo;
 use App\Entity\Classe;
+
 use App\Repository\AlbumRepository;
+use App\Repository\ClasseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,12 +33,12 @@ class AlbumController extends AbstractController
     {
         // Récupérer l'album par son ID
         $album = $albumRepository->find($id);
-    
+
         // Vérifier si l'album existe
         if (!$album) {
             return $this->json(['error' => 'Album inexistant.'], 404);
         }
-    
+
         // Retourner les données de l'utilisateur au format JSON
         return $this->json($album, 200, [], ['groups' => 'get_album_item']);
     }
@@ -85,29 +87,29 @@ class AlbumController extends AbstractController
 
         return $this->json(['message' => 'Album créé avec succès'], 201);
     }
-    
+
 
     #[Route('/api/admin/albums/{id}/edit', name: 'api_admin_albums_update', methods: ['PUT'])]
     public function update(int $id, Request $request, EntityManagerInterface $entityManager, AlbumRepository $albumRepository): JsonResponse
     {
         $jsonData = json_decode($request->getContent(), true);
-    
+
         $album = $albumRepository->find($id);
-    
+
         // Vérifier si l'album existe
         if (!$album) {
             return $this->json(['error' => 'Album non trouvé.'], 404);
         }
-    
+
         // Mettre à jour les données de l'album
         if (isset($jsonData['title'])) {
             $album->setTitle($jsonData['title']);
         }
-    
+
         if (isset($jsonData['description'])) {
             $album->setDescription($jsonData['description']);
         }
-    
+
         // Mettre à jour les photos de l'album
         if (isset($jsonData['photos'])) {
             // Supprimer toutes les photos actuelles de l'album
@@ -122,9 +124,9 @@ class AlbumController extends AbstractController
                 $album->addPhoto($photo);
             }
         }
-    
+
         $entityManager->flush();
-    
+
         return $this->json(['message' => 'Album mis à jour avec succès'], 200);
     }
 
@@ -146,55 +148,182 @@ class AlbumController extends AbstractController
 
         return $this->json(['message' => 'l\'Album supprimé avec succès'], 200);
     }
-    
+    //...............................LES ROUTES POUR LES MANAGER.................................//
+    //Afficher la liste des albums
+    //TODO afficher des albums pour une classe /api/manager/classes/{id}/album
+
+    private ClasseRepository $classeRepository;
+
+    public function __construct(ClasseRepository $classeRepository)
+    {
+        $this->classeRepository = $classeRepository;
+    }
+
+    #[Route('/api/manager/classes/{id}/albums', name: 'api_manager_classe_albums', methods: ['GET'])]
+    public function indexManagerForClasse(int $id): JsonResponse
+    {
+        // Récupérer la classe par son ID
+        $classe = $this->classeRepository->find($id);
+        // Vérifier si la classe existe
+        if (!$classe) {
+            return $this->json(['error' => 'Classe inexistante.'], 404);
+        }
+        // Récupérer les albums de la classe
+        $albums = $classe->getAlbums();
+        return $this->json($albums, 200, [], ['groups' => 'get_albums_collection', 'get_album_item']);
+    }
+
+    //Afficher un album d'après son ID
+    //TODO l'album pour une classe en particulier /api/manager/classes/{id}/albums/{id}
+    #[Route('/api/manager/classes/{id}/albums/{albumId}', name: 'api_manager_classe_album_show', methods: ['GET'])]
+    public function showManagerForClasse(int $id, int $albumId): JsonResponse
+    {
+        // Récupérer la classe par son ID
+        $classe = $this->classeRepository->find($id);
+        // Vérifier si la classe existe
+        if (!$classe) {
+            return $this->json(['error' => 'Classe inexistante.'], 404);
+        }
+        // Récupérer l'album de la classe par son ID
+        $album = $classe->getAlbumById($albumId);
+        // Vérifier si l'album existe
+        if (!$album) {
+            return $this->json(['error' => 'Album inexistant.'], 404);
+        }
+        return $this->json($album, 200, [], ['groups' => 'get_album_item']);
+    }
+
+    //création d'un album
+    #[Route('/api/manager/albums/new', name: 'api_manager_albums_nouveau', methods: ['POST'])]
+    public function createManager(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+
+        $jsonData = json_decode($request->getContent(), true);
+        // Valider les données (ex: vérifier si les champs requis sont présents)
+        if (!isset($jsonData['title'], $jsonData['description'], $jsonData['photos'], $jsonData['classe'])) {
+            return $this->json(['error' => 'Les champs Title, Description, photos, classe sont requis.'], 400);
+        }
+
+        // Vérifier si 'photos' est un tableau
+        if (!is_array($jsonData['photos'])) {
+            return $this->json(['error' => 'La clé photos doit être un tableau.'], 400);
+        }
+
+        //Gérer les clés étrangères
+        //Récupérer la classe par son ID
+        $classeId = $jsonData['classe'];
+        $classe = $entityManager->getRepository(Classe::class)->find($classeId);
+        // Vérifier si la classe existe
+        if (!$classe) {
+            return $this->json(['error' => 'La classe spécifiée n\'existe pas.'], 400);
+        }
+
+        $album = new Album();
+        $album->setTitle($jsonData['title']);
+        $album->setDescription($jsonData['description']);
+        $album->setClasse($classe);
+
+        foreach ($jsonData['photos'] as $photoId) {
+            $photo = $entityManager->getRepository(Photo::class)->find($photoId);
+            if (!$photo) {
+                return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);
+            }
+            $album->addPhoto($photo);
+        }
+
+        $entityManager->persist($album);
+        $entityManager->flush();
+
+
+        return $this->json(['message' => 'Album créé avec succès'], 201);
+    }
+
+    //Editer l'album
+    #[Route('/api/manager/albums/{id}/edit', name: 'api_manager_albums_update', methods: ['PUT'])]
+    public function updateManager(int $id, Request $request, EntityManagerInterface $entityManager, AlbumRepository $albumRepository): JsonResponse
+    {
+        $jsonData = json_decode($request->getContent(), true);
+
+        $album = $albumRepository->find($id);
+
+        // Vérifier si l'album existe
+        if (!$album) {
+            return $this->json(['error' => 'Album non trouvé.'], 404);
+        }
+
+        // Mettre à jour les données de l'album
+        if (isset($jsonData['title'])) {
+            $album->setTitle($jsonData['title']);
+        }
+
+        if (isset($jsonData['description'])) {
+            $album->setDescription($jsonData['description']);
+        }
+
+        // Mettre à jour les photos de l'album
+        if (isset($jsonData['photos'])) {
+            // Supprimer toutes les photos actuelles de l'album
+            foreach ($album->getPhotos() as $photo) {
+                $album->removePhoto($photo);
+            }
+            foreach ($jsonData['photos'] as $photoId) {
+                $photo = $entityManager->getRepository(Photo::class)->find($photoId);
+                if (!$photo) {
+                    return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);
+                }
+                $album->addPhoto($photo);
+            }
+        }
+
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Album mis à jour avec succès'], 200);
+    }
+
+
+    //suppression d'un album
+    #[Route('/api/manager/albums/{id}/delete', name: 'api_manager_albums_delete', methods: ['DELETE'])]
+    public function deleteManager(int $id, AlbumRepository $albumRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $album = $albumRepository->find($id);
+
+        // Vérifier si l'album est présent
+        if (!$album) {
+            return $this->json(['error' => 'Album non trouvée.'], 404);
+        }
+
+        // Supprimer la photo
+        $entityManager->remove($album);
+        $entityManager->flush();
+
+        return $this->json(['message' => 'l\'Album supprimé avec succès'], 200);
+    }
+
+    //--------------------------------------- LES  ROUTES  POUR  LES PARENTS -------------------------------------//
+    //Afficher la liste des albums
+    //TODO Afficher les albums d'une classe /api/parent/classes/{id}/albums
+    #[Route('/api/parent/albums', name: 'api_parent_albums', methods: ['GET'])]
+    public function indexParent(AlbumRepository $albumRepository): JsonResponse
+    {
+        // Récupérer les données pour affichage des albums.
+        $albums = $albumRepository->findAll();
+        return $this->json($albums, 200, [], ['groups' => 'get_albums_collection', 'get_album_item']);
+    }
+
+    //Afficher un album d'après son ID
+    //TODO Afficher l'album d'une classe /api/parent/classes/{id}/albums/{id}
+    #[Route('/api/parent/albums/{id<\d+>}', name: 'api_parent_albums_show', methods: ['GET'])]
+    public function showParent(int $id, AlbumRepository $albumRepository): JsonResponse
+    {
+        // Récupérer l'album par son ID
+        $album = $albumRepository->find($id);
+
+        // Vérifier si l'album existe
+        if (!$album) {
+            return $this->json(['error' => 'Album inexistant.'], 404);
+        }
+
+        // Retourner les données de l'utilisateur au format JSON
+        return $this->json($album, 200, [], ['groups' => 'get_album_item']);
+    }
 }
-//     @Route("/{id}/edit", name="album_edit")
-//     */
-//    public function editAction(Request $request, $id, EntityManagerInterface $em)
-//    {
-//        $album = $em->getRepository(Album::class)->find($id);
-
-//        // Décoder les données JSON
-//        $jsonData = $this->get('serializer')->decode($request->getContent(), 'json');
-
-//        // Vérifier la présence des champs obligatoires
-//        if (!isset($jsonData['title']) || !isset($jsonData['description']) || !isset($jsonData['classe'])) {
-//            return $this->json(['error' => 'Des champs obligatoires sont manquants.'], 400);
-//        }
-
-//        // Mettre à jour les champs de l'album
-//        $album->setTitle($jsonData['title']);
-//        $album->setDescription($jsonData['description']);
-
-//        // Trouver la classe
-//        $classe = $em->getRepository(Classe::class)->find($jsonData['classe']);
-//        if (!$classe) {
-//            return $this->json(['error' => 'La classe spécifiée n\'existe pas.'], 400);
-//        }
-//        $album->setClasse($classe);
-
-//        // Supprimer les photos sélectionnées
-//        foreach ($jsonData['photosToRemove'] as $photoId) {
-//            $photo = $em->getRepository(Photo::class)->find($photoId);
-//            if (!$photo) {
-//                return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);
-//            }
-//            $em->remove($photo);
-//        }
-
-//        // Définir les nouvelles photos
-//        $album->setPhotos($jsonData['photos']);
-
-//        // Enregistrer les modifications
-//        $em->flush();
-
-//        // Encoder la réponse JSON
-//        $response = $this->get('serializer')->serialize($album, 'json');
-
-//        return $this->json($response);
-//    }
-// }
-
-
-
-

@@ -154,4 +154,51 @@ public function create(Request $request, EntityManagerInterface $entityManager):
         
         return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
     }
-}
+
+    //----------------------------------------ROUTES POUR LES MANAGER-------------------------------------//
+    //Afficher toutes les classes
+    // #[Route('/api/manager/classes', name: 'api_manager_classes', methods: ['GET'])]
+    // public function indexManager(ClasseRepository $classeRepository): JsonResponse
+    // {
+    //     //Recup les données pour affichage des classes.
+    //     $classes = $classeRepository->findAll();
+    //     return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
+    // }
+
+    //Afficher une classe d'après son ID
+    #[Route('/api/manager/classes/{id<\d+>}', name: 'api_manager_classes_show', methods: ['GET'])]
+    public function showManager(int $id, ClasseRepository $classeRepository): JsonResponse
+    {
+        // Récupérer la classe par son ID
+        $classe = $classeRepository->find($id);
+    
+        // Vérifier si la classe existe
+        if (!$classe) {
+            return $this->json(['error' => 'Utilisateur inexistant.'], 404);
+        }
+    
+        // Retourner les données de l'utilisateur au format JSON
+        return $this->json($classe, 200, [], ['groups' => 'get_class_item']);
+    }
+
+  
+
+     //--------------------------------------- LES  ROUTES  POUR  LES PARENTS -------------------------------------//
+
+    
+     //Afficher une classe d'après son ID
+     #[Route('/api/parent/classes/{id<\d+>}', name: 'api_parentclasses_show', methods: ['GET'])]
+     public function showParent(int $id, ClasseRepository $classeRepository): JsonResponse
+     {
+         // Récupérer la classe par son ID
+         $classe = $classeRepository->find($id);
+     
+         // Vérifier si la classe existe
+         if (!$classe) {
+             return $this->json(['error' => 'Utilisateur inexistant.'], 404);
+         }
+     
+         // Retourner les données de l'utilisateur au format JSON
+         return $this->json($classe, 200, [], ['groups' => 'get_class_item']);
+     }
+    }

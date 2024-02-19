@@ -115,6 +115,16 @@ class Classe
     {
         return $this->albums;
     }
+    
+    public function getAlbumById(int $albumId): ?Album
+{
+    foreach ($this->albums as $album) {
+        if ($album->getId() === $albumId) {
+            return $album;
+        }
+    }
+    return null;
+}
 
     public function addAlbum(Album $album): static
     {
