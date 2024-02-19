@@ -36,20 +36,20 @@ class Photo
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
-        //Fonction construct pour formater les dates de créations et de modifications.
-        public function __construct()
-        {
-            $this->created_at = new \DateTimeImmutable();
-            $this->updated_at = new \DateTimeImmutable();
-            $this->comments = new ArrayCollection();
-        }
+    //Fonction construct pour formater les dates de créations et de modifications.
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+        $this->comments = new ArrayCollection();
+    }
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'photos')]
     //super important pour ne pas faire buguer les tables avec les clés étrangères: 
-    #[ORM\JoinColumn(nullable:false, onDelete: "CASCADE")]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     #[Groups(['get_photos_collection', 'get_photo_item'])]
     private ?Album $album = null;
 
@@ -57,7 +57,23 @@ class Photo
 
     private Collection $comments;
 
-    
+    #[ORM\ManyToOne(inversedBy: 'photos')]
+    #[ORM\JoinColumn( nullable: false, name: 'album_id', referencedColumnName: 'id', onDelete: "CASCADE")]
+    private Classe $class;
+
+    public function getClass(): ?Classe
+    {
+        return $this->class;
+    }
+
+    public function setClass(?Classe $class): self
+    {
+        $this->class = $class;
+
+        return $this;
+    }
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -176,4 +192,5 @@ class Photo
 
         return $this;
     }
+
 }

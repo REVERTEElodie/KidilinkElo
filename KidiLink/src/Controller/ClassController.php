@@ -156,14 +156,6 @@ public function create(Request $request, EntityManagerInterface $entityManager):
     }
 
     //----------------------------------------ROUTES POUR LES MANAGER-------------------------------------//
-    //Afficher toutes les classes
-    // #[Route('/api/manager/classes', name: 'api_manager_classes', methods: ['GET'])]
-    // public function indexManager(ClasseRepository $classeRepository): JsonResponse
-    // {
-    //     //Recup les données pour affichage des classes.
-    //     $classes = $classeRepository->findAll();
-    //     return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
-    // }
 
     //Afficher une classe d'après son ID
     #[Route('/api/manager/classes/{id<\d+>}', name: 'api_manager_classes_show', methods: ['GET'])]

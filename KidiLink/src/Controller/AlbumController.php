@@ -78,7 +78,9 @@ class AlbumController extends AbstractController
             if (!$photo) {
                 return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);
             }
+            $photo->setAlbum($album);
             $album->addPhoto($photo);
+            $entityManager->persist($photo);
         }
 
         $entityManager->persist($album);
@@ -121,7 +123,9 @@ class AlbumController extends AbstractController
                 if (!$photo) {
                     return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);
                 }
+                $photo->setAlbum($album);
                 $album->addPhoto($photo);
+                $entityManager->persist($photo);
             }
         }
 
@@ -302,28 +306,37 @@ class AlbumController extends AbstractController
     //--------------------------------------- LES  ROUTES  POUR  LES PARENTS -------------------------------------//
     //Afficher la liste des albums
     //TODO Afficher les albums d'une classe /api/parent/classes/{id}/albums
-    #[Route('/api/parent/albums', name: 'api_parent_albums', methods: ['GET'])]
-    public function indexParent(AlbumRepository $albumRepository): JsonResponse
+
+    #[Route('/api/parent/classes/{id}/albums', name: 'api_parent_classe_albums', methods: ['GET'])]
+    public function indexParentForClasse(int $id): JsonResponse
     {
-        // Récupérer les données pour affichage des albums.
-        $albums = $albumRepository->findAll();
+        // Récupérer la classe par son ID
+        $classe = $this->classeRepository->find($id);
+        // Vérifier si la classe existe
+        if (!$classe) {
+            return $this->json(['error' => 'Classe inexistante.'], 404);
+        }
+        // Récupérer les albums de la classe
+        $albums = $classe->getAlbums();
         return $this->json($albums, 200, [], ['groups' => 'get_albums_collection', 'get_album_item']);
     }
-
     //Afficher un album d'après son ID
     //TODO Afficher l'album d'une classe /api/parent/classes/{id}/albums/{id}
-    #[Route('/api/parent/albums/{id<\d+>}', name: 'api_parent_albums_show', methods: ['GET'])]
-    public function showParent(int $id, AlbumRepository $albumRepository): JsonResponse
+    #[Route('/api/parent/classes/{id}/albums/{albumId}', name: 'api_parent_classe_album_show', methods: ['GET'])]
+    public function showParentForClasse(int $id, int $albumId): JsonResponse
     {
-        // Récupérer l'album par son ID
-        $album = $albumRepository->find($id);
-
+        // Récupérer la classe par son ID
+        $classe = $this->classeRepository->find($id);
+        // Vérifier si la classe existe
+        if (!$classe) {
+            return $this->json(['error' => 'Classe inexistante.'], 404);
+        }
+        // Récupérer l'album de la classe par son ID
+        $album = $classe->getAlbumById($albumId);
         // Vérifier si l'album existe
         if (!$album) {
             return $this->json(['error' => 'Album inexistant.'], 404);
         }
-
-        // Retourner les données de l'utilisateur au format JSON
         return $this->json($album, 200, [], ['groups' => 'get_album_item']);
     }
 }
