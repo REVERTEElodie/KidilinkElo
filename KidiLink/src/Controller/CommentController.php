@@ -66,6 +66,9 @@ class CommentController extends AbstractController
         $photoId = $jsonData['photo'];
         $photo = $entityManager->getRepository(Photo::class)->find($photoId);
 
+        // on vérifie si le parent a le droit de commenter la photo
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $photo);
+
         // Vérifier si la photo existe
         if (!$photo) {
             return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);

@@ -8,6 +8,7 @@ use App\Entity\Classe;
 
 use App\Repository\AlbumRepository;
 use App\Repository\ClasseRepository;
+use App\Security\Voter\AlbumVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +25,7 @@ class AlbumController extends AbstractController
     #[Route('/api/parent/albums', name: 'api_admin_albums', methods: ['GET'])]
     public function index(AlbumRepository $albumRepository): JsonResponse
     {
+       
         // Récupérer les données pour affichage des albums.
         $albums = $albumRepository->findAll();
         return $this->json($albums, 200, [], ['groups' => 'get_albums_collection', 'get_album_item']);
@@ -37,7 +39,7 @@ class AlbumController extends AbstractController
     {
         // Récupérer l'album par son ID
         $album = $albumRepository->find($id);
-
+        $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$album);
         // Vérifier si l'album existe
         if (!$album) {
             return $this->json(['error' => 'Album inexistant.'], 404);

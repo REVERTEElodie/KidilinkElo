@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Album;
 use App\Entity\Classe;
+use App\Security\Voter\ClasseVoter;
 use App\Repository\ClasseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,14 +26,17 @@ class ClassController extends AbstractController
         return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
     }
 
-    //Afficher une photo d'après son ID
+    //Afficher une classe d'après son ID
     #[Route('/api/admin/classes/{id<\d+>}', name: 'api_admin_classes_show', methods: ['GET'])]
     #[Route('/api/manager/classes/{id<\d+>}', name: 'api_manager_classes_show', methods: ['GET'])]
     #[Route('/api/parent/classes/{id<\d+>}', name: 'api_parent_classes_show', methods: ['GET'])]
     public function show(int $id, ClasseRepository $classeRepository): JsonResponse
     {
+      
         // Récupérer la classe par son ID
         $classe = $classeRepository->find($id);
+
+          $this->denyAccessUnlessGranted(ClasseVoter::CLASSE, $classe);
 
         // Vérifier si la classe existe
         if (!$classe) {
@@ -46,7 +50,6 @@ class ClassController extends AbstractController
     //création d'une classe
     // Réaliser sa route en POST
     #[Route('/api/admin/classes/new', name: 'api_admin_classes_nouveau', methods: ['POST'])]
-    #[Route('/api/manager/classes/new', name: 'api_manager_classes_nouveau', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer les données JSON de la requête
@@ -81,7 +84,6 @@ class ClassController extends AbstractController
 
     // Mise à jour d'une classe
     #[Route('/api/admin/classes/{id}/edit', name: 'api_admin_classes_update', methods: ['PUT'])]
-    #[Route('/api/manager/classes/{id}/edit', name: 'api_manager_classes_update', methods: ['PUT'])]
     public function update(int $id, Request $request, ClasseRepository $classeRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer la classe à mettre à jour
@@ -111,7 +113,6 @@ class ClassController extends AbstractController
 
     //suppression d'une classe
     #[Route('/api/admin/classes/{id}/delete', name: 'api_admin_classes_delete', methods: ['DELETE'])]
-    #[Route('/api/manager/classes/{id}/delete', name: 'api_manager_classes_delete', methods: ['DELETE'])]
     public function delete(int $id, ClasseRepository $classeRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $classe = $classeRepository->find($id);
@@ -127,6 +128,4 @@ class ClassController extends AbstractController
 
         return $this->json(['message' => 'Classe supprimée avec succès'], 200);
     }
-
-
 }

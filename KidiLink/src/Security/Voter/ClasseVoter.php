@@ -18,13 +18,12 @@ class ClasseVoter extends Voter
         return in_array($attribute, $actions) && $subject instanceof \App\Entity\Classe;
     }
 
-    /**
-     * @param Classe $classe
-     */
     protected function voteOnAttribute(string $attribute, mixed $classe, TokenInterface $token): bool
     {   
         /** @var User */
         $user = $token->getUser();
+        $userIsAuthentified = ($user instanceof UserInterface);
+        
         // if the user is anonymous, do not grant access
         if ($user instanceof UserInterface) {
             /**
@@ -35,13 +34,18 @@ class ClasseVoter extends Voter
              */
             switch ($attribute) {
                 case self::CLASSE:
+                  
                     $userClasses = $user->getClasses();
+                    $userClassesManaged = $user->getClassesManaged();
 
                     // Vérifier si la classe fait partie des classes auxquelles l'utilisateur a accès
-                    if ($userClasses->contains($classe)) {
-                        return true;
-                    }
-                    break;
+                    return (
+                        $userIsAuthentified && (
+                            $userClasses->contains($classe) || // l'utilisateur est parent de la classe
+                            $userClassesManaged->contains($classe) || // l'utilisateur est enseignant de la classe
+                            in_array('ROLE_ADMIN', $user->getRoles()) // l'utilisateur est admin
+                        )
+                    );
             }
         }
 
