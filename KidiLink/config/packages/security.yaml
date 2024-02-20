@@ -38,10 +38,10 @@ security:
 
   access_control:
     - { path: ^/api/login_check, roles:  PUBLIC_ACCESS }
-    # example attention c'est l un ou l'autre et pas les deux
-    - { path: ^/api/me/classes-managed, roles: [ROLE_MANAGER, ROLE_ADMIN]}
-    - { path: ^/api/me, roles: IS_AUTHENTICATED_FULLY }
+
     - { path: ^/api/admin, roles: [ROLE_ADMIN]}
+    - { path: ^/api/manager, roles: [ROLE_MANAGER]}
+    - { path: ^/api/parent, roles: [ROLE_USER]}
 
 when@test:
   security:
