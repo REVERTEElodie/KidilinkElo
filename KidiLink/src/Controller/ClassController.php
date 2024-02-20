@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ClassController extends AbstractController
 { 
     //Afficher toutes les classes
-    #[Route('/api/classes', name: 'api_classes', methods: ['GET'])]
+    #[Route('/api/admin/classes', name: 'api_admin_classes', methods: ['GET'])]
     public function index(ClasseRepository $classeRepository): JsonResponse
     {
         //Recup les données pour affichage des classes.
@@ -26,7 +26,7 @@ class ClassController extends AbstractController
     }
 
     //Afficher une photo d'après son ID
-    #[Route('/api/classes/{id<\d+>}', name: 'api_classes_show', methods: ['GET'])]
+    #[Route('/api/admin/classes/{id<\d+>}', name: 'api_admin_classes_show', methods: ['GET'])]
     public function show(int $id, ClasseRepository $classeRepository): JsonResponse
     {
         // Récupérer la classe par son ID
@@ -43,7 +43,7 @@ class ClassController extends AbstractController
 
    //création d'une classe
 // Réaliser sa route en POST
-#[Route('/api/classes/new', name: 'api_classes_nouveau', methods: ['POST'])]
+#[Route('/api/admin/classes/new', name: 'api_admin_classes_nouveau', methods: ['POST'])]
 public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
 {
     // Récupérer les données JSON de la requête
@@ -77,7 +77,7 @@ public function create(Request $request, EntityManagerInterface $entityManager):
 }
 
     // Mise à jour d'une classe
-    #[Route('/api/classes/{id}/edit', name: 'api_classes_update', methods: ['PUT'])]
+    #[Route('/api/admin/classes/{id}/edit', name: 'api_admin_classes_update', methods: ['PUT'])]
     public function update(int $id, Request $request, ClasseRepository $classeRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer la classe à mettre à jour
@@ -106,7 +106,7 @@ public function create(Request $request, EntityManagerInterface $entityManager):
     }
 
     //suppression d'une classe
-    #[Route('/api/classes/{id}/delete', name: 'api_classes_delete', methods: ['DELETE'])]
+    #[Route('/api/admin/classes/{id}/delete', name: 'api_admin_classes_delete', methods: ['DELETE'])]
     public function delete(int $id, ClasseRepository $classeRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $classe = $classeRepository->find($id);
@@ -121,37 +121,6 @@ public function create(Request $request, EntityManagerInterface $entityManager):
         $entityManager->flush();
 
         return $this->json(['message' => 'Classe supprimée avec succès'], 200);
-    }
-
-    // Retourner les classes pour l'utilisateur  parent
-    //le me fait référence à l'utilisateur connecté donc qui a reçu le token. (convention de nommage)
-    #[Route('/api/me/classes', name: 'api_classes_parents', methods: ['GET'])]
-    public function userClasses(ClasseRepository $classeRepository): JsonResponse
-    {   
-        //ouvrir le blockcode et y mettre ce code pour permettre l'autocomplétion.
-        /** @var App\Entity\User $user */
-
-        //permet de recueillir les informations de l'utilisateur
-        $user = $this->getUser();
-        
-        //permet de recueillir les infos de la classe selon l'utilisateur (ici parents)
-        $classes = $user->getClasses();
-        
-        return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
-    }
-
-    // Retourner la ou les classes de l'utilisateur encadrant
-    #[Route('/api/me/classes-managed', name: 'api_classes_managed', methods: ['GET'])]
-    public function managerClasses(ClasseRepository $classeRepository): JsonResponse
-    {
-        /** @var App\Entity\User $user */
-        //permet de recueillir les informations de l'utilisateur
-        $user = $this->getUser();
-        
-        //permet de recueillir les infos de la classe selon l'utilisateur (ici encadrant)
-        $classes = $user->getClassesManaged();
-        
-        return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
     }
 
 

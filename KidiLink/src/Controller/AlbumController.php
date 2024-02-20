@@ -139,7 +139,6 @@ class AlbumController extends AbstractController
     }
     //...............................LES ROUTES POUR LES MANAGER.................................//
     //Afficher la liste des albums
-    //TODO afficher des albums pour une classe /api/manager/classes/{id}/album
 
     private ClasseRepository $classeRepository;
 
@@ -163,7 +162,7 @@ class AlbumController extends AbstractController
     }
 
     //Afficher un album d'après son ID
-    //TODO l'album pour une classe en particulier /api/manager/classes/{id}/albums/{id}
+    
     #[Route('/api/manager/classes/{id}/albums/{albumId}', name: 'api_manager_classe_album_show', methods: ['GET'])]
     public function showManagerForClasse(int $id, int $albumId): JsonResponse
     {

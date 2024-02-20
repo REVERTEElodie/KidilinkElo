@@ -6,6 +6,7 @@ use App\Entity\Photo;
 use App\Entity\Comment;
 use App\Repository\PhotoRepository;
 use App\Repository\CommentRepository;
+use App\Security\Voter\PhotoVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CommentController extends AbstractController
-{   
+{
     //--------------------------------------- LES  ROUTES  POUR  L ADMIN -------------------------------------//
     //Afficher tous les commentaires
     #[Route('/api/admin/comments', name: 'api_admin_comments', methods: ['GET'])]
@@ -32,12 +33,12 @@ class CommentController extends AbstractController
     {
         // Récupérer le commentaire par son ID
         $comment = $commentRepository->find($id);
-    
+
         // Vérifier si le commentaire existe
         if (!$comment) {
             return $this->json(['error' => 'Commentaire inexistant.'], 404);
         }
-    
+
         // Retourner les données du commentaire au format JSON
         return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
     }
@@ -78,30 +79,30 @@ class CommentController extends AbstractController
     }
 
     // Mise à jour d'un commentaire
-#[Route('/api/admin/comments/{id}/edit', name: 'api_admin_comments_update', methods: ['PUT'])]
-public function update(int $id, Request $request, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
-{
-    // Récupérer le commentaire à mettre à jour
-    $comment = $commentRepository->find($id);
+    #[Route('/api/admin/comments/{id}/edit', name: 'api_admin_comments_update', methods: ['PUT'])]
+    public function update(int $id, Request $request, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Récupérer le commentaire à mettre à jour
+        $comment = $commentRepository->find($id);
 
-    // Vérifier si le commentaire existe
-    if (!$comment) {
-        return $this->json(['error' => 'Commentaire inexistant.'], 404);
+        // Vérifier si le commentaire existe
+        if (!$comment) {
+            return $this->json(['error' => 'Commentaire inexistant.'], 404);
+        }
+
+        // Récupérer les données JSON de la requête
+        $jsonData = json_decode($request->getContent(), true);
+
+        // Mettre à jour les champs du commentaire
+        if (isset($jsonData['content'])) {
+            $comment->setContent($jsonData['content']);
+        }
+
+        // Enregistrer les modifications
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Commentaire mis à jour avec succès'], 200);
     }
-
-    // Récupérer les données JSON de la requête
-    $jsonData = json_decode($request->getContent(), true);
-
-    // Mettre à jour les champs du commentaire
-    if (isset($jsonData['content'])) {
-        $comment->setContent($jsonData['content']);
-    }
-
-    // Enregistrer les modifications
-    $entityManager->flush();
-
-    return $this->json(['message' => 'Commentaire mis à jour avec succès'], 200);
-}
 
 
     //suppression d'un commentaire
@@ -122,217 +123,223 @@ public function update(int $id, Request $request, CommentRepository $commentRepo
         return $this->json(['message' => 'Commentaire supprimé avec succès'], 200);
     }
     //--------------------------------------- LES  ROUTES  POUR  LES MANAGER -------------------------------------//
-        //Afficher tous les commentaires
-        //TODO on veut afficher les commentaires des photos des albums de sa ou ses classes.
-        //TODO /api/manager/classes/{id}/albums/photos/comments
-        #[Route('/api/manager/photos/{photo_id}/comments', name: 'api_manager_class_album_photos_comments', methods: ['GET'])]
-        public function indexManagerForClassAlbumPhotos(int $photo_id, CommentRepository $commentRepository, PhotoRepository $photoRepository): JsonResponse
-        {
-            $photo = $photoRepository->find($photo_id);
+    //Afficher tous les commentaires
+    //TODO on veut afficher les commentaires des photos des albums de sa ou ses classes.
+    //TODO /api/manager/classes/{id}/albums/photos/comments
+    #[Route('/api/manager/photos/{photo_id}/comments', name: 'api_manager_class_album_photos_comments', methods: ['GET'])]
+    public function indexManagerForClassAlbumPhotos(int $photo_id, CommentRepository $commentRepository, PhotoRepository $photoRepository): JsonResponse
+    {
+        $photo = $photoRepository->find($photo_id);
 
-            $comments = $photo->getComments();
-    
-            return $this->json($comments, 200, [], ['groups' => 'get_comments_collection', 'get_comment_item']);
+        $comments = $photo->getComments();
+
+        return $this->json($comments, 200, [], ['groups' => 'get_comments_collection', 'get_comment_item']);
+    }
+
+    //Afficher un commentaire d'après son ID
+    //TODO on veut afficher le commentaire des photos des albums de sa ou ses classes.
+    //TODO /api/manager/classes/{id}/albums/photos/comments/{id}
+    #[Route('/api/manager/comments/{id}', name: 'api_manager_class_album_photos_comment_show', methods: ['GET'])]
+    public function showManagerForClassAlbumPhoto(Comment $comment, CommentRepository $commentRepository, PhotoRepository $photoRepository): JsonResponse
+    {
+        return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
+    }
+
+    // Création d'un commentaire
+    #[Route('/api/manager/comments/new', name: 'api_manager_comments_new', methods: ['POST'])]
+    public function createManager(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Récupérer les données JSON de la requête
+        $jsonData = json_decode($request->getContent(), true);
+
+        // Valider les données (ex: vérifier si les champs requis sont présents)
+        if (!isset($jsonData['content'], $jsonData['photo'])) {
+            return $this->json(['error' => 'Le champ Content et photo sont requis.'], 400);
         }
-        
-        //Afficher un commentaire d'après son ID
-        //TODO on veut afficher le commentaire des photos des albums de sa ou ses classes.
-        //TODO /api/manager/classes/{id}/albums/photos/comments/{id}
-        #[Route('/api/manager/comments/{id}', name: 'api_manager_class_album_photos_comment_show', methods: ['GET'])]
-         public function showManagerForClassAlbumPhoto(Comment $comment, CommentRepository $commentRepository, PhotoRepository $photoRepository): JsonResponse
-        {
-            return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
-        }
-    
-        // Création d'un commentaire
-        #[Route('/api/manager/comments/new', name: 'api_manager_comments_new', methods: ['POST'])]
-        public function createManager(Request $request, EntityManagerInterface $entityManager): JsonResponse
-        {
-            // Récupérer les données JSON de la requête
-            $jsonData = json_decode($request->getContent(), true);
-    
-            // Valider les données (ex: vérifier si les champs requis sont présents)
-            if (!isset($jsonData['content'], $jsonData['photo'])) {
-                return $this->json(['error' => 'Le champ Content et photo sont requis.'], 400);
-            }
-    
-            // Gérer les clés étrangères
-            // Récupérer la photo par son ID
-            $photoId = $jsonData['photo'];
-            $photo = $entityManager->getRepository(Photo::class)->find($photoId);
-    
-            // Vérifier si la photo existe
-            if (!$photo) {
-                return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);
-            }
-    
-            // Créer un nouveau commentaire
-            $comment = new Comment();
-            $comment->setContent($jsonData['content']);
-            $comment->setPhoto($photo);
-    
-            // Enregistrer le commentaire
-            $entityManager->persist($comment);
-            $entityManager->flush();
-    
-            // Retourner les informations au format JSON
-            return $this->json(['message' => 'Le commentaire a été ajouté avec succès'], 201);
-        }
-    
-        // Mise à jour d'un commentaire
+
+        // Gérer les clés étrangères
+        // Récupérer la photo par son ID
+        $photoId = $jsonData['photo'];
+        $photo = $entityManager->getRepository(Photo::class)->find($photoId);
+
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $photo);
+
+        // Créer un nouveau commentaire
+        $comment = new Comment();
+        $comment->setContent($jsonData['content']);
+        $comment->setPhoto($photo);
+
+        // Enregistrer le commentaire
+        $entityManager->persist($comment);
+        $entityManager->flush();
+
+        // Retourner les informations au format JSON
+        return $this->json(['message' => 'Le commentaire a été ajouté avec succès'], 201);
+    }
+
+    // Mise à jour d'un commentaire
     #[Route('/api/manager/comments/{id}/edit', name: 'api_admin_manager_update', methods: ['PUT'])]
     public function updateManager(int $id, Request $request, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer le commentaire à mettre à jour
         $comment = $commentRepository->find($id);
-    
+
         // Vérifier si le commentaire existe
         if (!$comment) {
             return $this->json(['error' => 'Commentaire inexistant.'], 404);
         }
-    
+
         // Récupérer les données JSON de la requête
         $jsonData = json_decode($request->getContent(), true);
-    
+
         // Mettre à jour les champs du commentaire
         if (isset($jsonData['content'])) {
             $comment->setContent($jsonData['content']);
         }
-    
+
         // Enregistrer les modifications
         $entityManager->flush();
-    
+
         return $this->json(['message' => 'Commentaire mis à jour avec succès'], 200);
     }
-    
-    
-        //suppression d'un commentaire
-        #[Route('/api/manager/comments/{id}/delete', name: 'api_manager_comments_delete', methods: ['DELETE'])]
-        public function deleteManager(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
-        {
-            $comment = $commentRepository->find($id);
-    
-            // Vérifier si le commentaire existe
-            if (!$comment) {
-                return $this->json(['error' => 'Commentaire non trouvée.'], 404);
-            }
-    
-            // Supprimer le commentaire
-            $entityManager->remove($comment);
-            $entityManager->flush();
-    
-            return $this->json(['message' => 'Commentaire supprimé avec succès'], 200);
+
+
+    //suppression d'un commentaire
+    #[Route('/api/manager/comments/{id}/delete', name: 'api_manager_comments_delete', methods: ['DELETE'])]
+    public function deleteManager(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $comment = $commentRepository->find($id);
+
+        // Vérifier si le commentaire existe
+        if (!$comment) {
+            return $this->json(['error' => 'Commentaire non trouvée.'], 404);
         }
 
-         //--------------------------------------- LES  ROUTES  POUR  LES PARENTS -------------------------------------//
+        // Supprimer le commentaire
+        $entityManager->remove($comment);
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Commentaire supprimé avec succès'], 200);
+    }
+
+    //--------------------------------------- LES  ROUTES  POUR  LES PARENTS -------------------------------------//
 
 
-  //Afficher tous les commentaires
- //TODO on veut afficher les commentaires des photos des albums de sa ou ses classes.
- //TODO /api/parent/classes/{id}/albums/photos/comments
-  #[Route('/api/parent/comments', name: 'api_parent_comments', methods: ['GET'])]
-  public function indexParent(CommentRepository $commentRepository): JsonResponse
-  {
-      // Récupérer les données pour affichage des commentaires.
-      $comments = $commentRepository->findAll();
-      return $this->json($comments, 200, [], ['groups' => 'get_comments_collection', 'get_comment_item']);
-  }
+    //Afficher tous les commentaires
+    //TODO on veut afficher les commentaires des photos des albums de sa ou ses classes.
+    //TODO /api/parent/classes/{id}/albums/photos/comments
+    #[Route('/api/parent/comments', name: 'api_parent_comments', methods: ['GET'])]
+    public function indexParent(CommentRepository $commentRepository): JsonResponse
+    {
+        // Récupérer les données pour affichage des commentaires.
+        $comments = $commentRepository->findAll();
+        return $this->json($comments, 200, [], ['groups' => 'get_comments_collection', 'get_comment_item']);
+    }
 
-  //Afficher un commentaire d'après son ID
-  //TODO on veut afficher le commentaire des photos des albums de sa ou ses classes.
-  //TODO /api/parent/classes/{id}/albums/photos/comments/{id}
-  #[Route('/api/parent/comments/{id<\d+>}', name: 'api_parent_comments_show', methods: ['GET'])]
-  public function showParent(int $id, CommentRepository $commentRepository): JsonResponse
-  {
-      // Récupérer le commentaire par son ID
-      $comment = $commentRepository->find($id);
-  
-      // Vérifier si le commentaire existe
-      if (!$comment) {
-          return $this->json(['error' => 'Commentaire inexistant.'], 404);
-      }
-  
-      // Retourner les données du commentaire au format JSON
-      return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
-  }
+    //Afficher un commentaire d'après son ID
+    //TODO on veut afficher le commentaire des photos des albums de sa ou ses classes.
+    //TODO /api/parent/classes/{id}/albums/photos/comments/{id}
+    #[Route('/api/parent/comments/{id<\d+>}', name: 'api_parent_comments_show', methods: ['GET'])]
+    public function showParent(int $id, CommentRepository $commentRepository): JsonResponse
+    {
+        // Récupérer le commentaire par son ID
+        $comment = $commentRepository->find($id);
 
-  // Création d'un commentaire
-  #[Route('/api/parent/comments/new', name: 'api_parent_comments_nouveau', methods: ['POST'])]
-  public function createParent(Request $request, EntityManagerInterface $entityManager): JsonResponse
-  {
-      // Récupérer les données JSON de la requête
-      $jsonData = json_decode($request->getContent(), true);
+        // Vérifier si le commentaire existe
+        if (!$comment) {
+            return $this->json(['error' => 'Commentaire inexistant.'], 404);
+        }
 
-      // Valider les données (ex: vérifier si les champs requis sont présents)
-      if (!isset($jsonData['content'], $jsonData['photo'])) {
-          return $this->json(['error' => 'Le champ Content et photo sont requis.'], 400);
-      }
+        // Retourner les données du commentaire au format JSON
+        return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
+    }
 
-      // Gérer les clés étrangères
-      // Récupérer la photo par son ID
-      $photoId = $jsonData['photo'];
-      $photo = $entityManager->getRepository(Photo::class)->find($photoId);
+    // Création d'un commentaire
+    #[Route('/api/parent/comments/new', name: 'api_parent_comments_nouveau', methods: ['POST'])]
+    public function createParent(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Récupérer les données JSON de la requête
+        $jsonData = json_decode($request->getContent(), true);
 
-      // Vérifier si la photo existe
-      if (!$photo) {
-          return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);
-      }
+        // Valider les données (ex: vérifier si les champs requis sont présents)
+        if (!isset($jsonData['content'], $jsonData['photo'])) {
+            return $this->json(['error' => 'Le champ Content et photo sont requis.'], 400);
+        }
 
-      // Créer un nouveau commentaire
-      $comment = new Comment();
-      $comment->setContent($jsonData['content']);
-      $comment->setPhoto($photo);
+        // Gérer les clés étrangères
+        // Récupérer la photo par son ID
+        $photoId = $jsonData['photo'];
+        $photo = $entityManager->getRepository(Photo::class)->find($photoId);
 
-      // Enregistrer le commentaire
-      $entityManager->persist($comment);
-      $entityManager->flush();
+        // on vérifie si le parent a le droit de commenter la photo
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $photo);
 
-      // Retourner les informations au format JSON
-      return $this->json(['message' => 'Le commentaire a été ajouté avec succès'], 201);
-  }
+        // Créer un nouveau commentaire
+        $comment = new Comment();
+        $comment->setContent($jsonData['content']);
+        $comment->setPhoto($photo);
 
-  // Mise à jour d'un commentaire
-#[Route('/api/parent/comments/{id}/edit', name: 'api_parent_comments_update', methods: ['PUT'])]
-public function updateParent(int $id, Request $request, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
-{
-  // Récupérer le commentaire à mettre à jour
-  $comment = $commentRepository->find($id);
+        // Enregistrer le commentaire
+        $entityManager->persist($comment);
+        $entityManager->flush();
 
-  // Vérifier si le commentaire existe
-  if (!$comment) {
-      return $this->json(['error' => 'Commentaire inexistant.'], 404);
-  }
+        // Retourner les informations au format JSON
+        return $this->json(['message' => 'Le commentaire a été ajouté avec succès'], 201);
+    }
 
-  // Récupérer les données JSON de la requête
-  $jsonData = json_decode($request->getContent(), true);
+    // Mise à jour d'un commentaire
+    #[Route('/api/parent/comments/{id}/edit', name: 'api_parent_comments_update', methods: ['PUT'])]
+    public function updateParent(int $id, Request $request, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Récupérer le commentaire à mettre à jour
+        $comment = $commentRepository->find($id);
 
-  // Mettre à jour les champs du commentaire
-  if (isset($jsonData['content'])) {
-      $comment->setContent($jsonData['content']);
-  }
+        // Vérifier si le commentaire existe
+        if (!$comment) {
+            return $this->json(['error' => 'Commentaire inexistant.'], 404);
+        }
 
-  // Enregistrer les modifications
-  $entityManager->flush();
+        // Récupérer les données JSON de la requête
+        $jsonData = json_decode($request->getContent(), true);
 
-  return $this->json(['message' => 'Commentaire mis à jour avec succès'], 200);
-}
+        // Mettre à jour l☺es champs du commentaire
+        if (isset($jsonData['content'])) {
+            $comment->setContent($jsonData['content']);
+        }
+
+        // Enregistrer les modifications
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Commentaire mis à jour avec succès'], 200);
+    }
 
 
-  //suppression d'un commentaire
-  #[Route('/api/parent/comments/{id}/delete', name: 'api_parent_comments_delete', methods: ['DELETE'])]
-  public function deleteParent(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
-  {
-      $comment = $commentRepository->find($id);
+    //suppression d'un commentaire
+    #[Route('/api/parent/comments/{id}/delete', name: 'api_parent_comments_delete', methods: ['DELETE'])]
+    public function deleteParent(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $comment = $commentRepository->find($id);
 
-      // Vérifier si le commentaire existe
-      if (!$comment) {
-          return $this->json(['error' => 'Commentaire non trouvée.'], 404);
-      }
+        // Vérifier si le commentaire existe
+        if (!$comment) {
+            return $this->json(['error' => 'Commentaire non trouvée.'], 404);
+        }
 
-      // Supprimer le commentaire
-      $entityManager->remove($comment);
-      $entityManager->flush();
+        // Supprimer le commentaire
+        $entityManager->remove($comment);
+        $entityManager->flush();
 
-      return $this->json(['message' => 'Commentaire supprimé avec succès'], 200);
-  }
+        return $this->json(['message' => 'Commentaire supprimé avec succès'], 200);
+    }
+
+    // #[Route('/api/pudding', name: 'api_pudding', methods: ['GET'])]
+    // #[Route('/api/arsenic', name: 'api_arsenic', methods: ['GET'])]
+    // public function testDuPuddingALArsenic()
+    // {
+    //     return $this->json([
+    //         'un peu de poivre en grain' => 'NOOOOOON',
+    //         'un peu de sucre en poudre' => 'NOOOOOON',
+    //         'un peu de vitriole' => 'NOOON... OUIIIIII'
+    //     ]);
+    // }
 }
