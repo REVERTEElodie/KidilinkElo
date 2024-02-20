@@ -168,7 +168,7 @@ class AppFixtures extends Fixture
 
         $photos = [];
         $albums = [];
-        $albumsCounts =  5;
+        $albumsCounts =  20;
         $photoCount = 200;
         //Données pour les Albums
         for ($i = 0; $i < $albumsCounts; $i++) {
