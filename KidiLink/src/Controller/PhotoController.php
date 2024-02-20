@@ -18,10 +18,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class PhotoController extends AbstractController
 {
     //Afficher toutes les photos
-   
-     #[Route('/api/admin/photos', name: 'api_admin_photos', methods: ['GET'])]
-     #[Route('/api/manager/photos', name: 'api_manager_photos', methods: ['GET'])]
-     #[Route('/api/parent/photos', name: 'api_parent_photos', methods: ['GET'])]
+
+    #[Route('/api/admin/photos', name: 'api_admin_photos', methods: ['GET'])]
+    #[Route('/api/manager/photos', name: 'api_manager_photos', methods: ['GET'])]
+    #[Route('/api/parent/photos', name: 'api_parent_photos', methods: ['GET'])]
     public function index(PhotoRepository $photoRepository): JsonResponse
     {
 
@@ -77,7 +77,7 @@ class PhotoController extends AbstractController
         $photo->setUrl($jsonData['url']);
         $photo->setLikes($jsonData['likes']);
         $photo->setAlbum($album);
-        
+
         // Ajouter le commentaire s'il est présent
         // if (isset($jsonData['comment'])) {
 
@@ -151,5 +151,4 @@ class PhotoController extends AbstractController
 
         return $this->json(['message' => 'Photo supprimée avec succès'], 200);
     }
-
 }
