@@ -47,8 +47,6 @@ class Album
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     #[Groups(['get_albums_collection', 'get_album_item'])]
     private ?Classe $classe = null;
-    
-
    
     public function getId(): ?int
     {

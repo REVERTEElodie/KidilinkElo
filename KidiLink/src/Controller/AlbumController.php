@@ -50,13 +50,8 @@ class AlbumController extends AbstractController
 
         $jsonData = json_decode($request->getContent(), true);
         // Valider les données (ex: vérifier si les champs requis sont présents)
-        if (!isset($jsonData['title'], $jsonData['description'], $jsonData['photos'], $jsonData['classe'])) {
-            return $this->json(['error' => 'Les champs Title, Description, photos, classe sont requis.'], 400);
-        }
-
-        // Vérifier si 'photos' est un tableau
-        if (!is_array($jsonData['photos'])) {
-            return $this->json(['error' => 'La clé photos doit être un tableau.'], 400);
+        if (!isset($jsonData['title'], $jsonData['classe'])) {
+            return $this->json(['error' => 'Les champs Title et classe sont requis.'], 400);
         }
 
         //Gérer les clés étrangères
@@ -68,20 +63,12 @@ class AlbumController extends AbstractController
             return $this->json(['error' => 'La classe spécifiée n\'existe pas.'], 400);
         }
 
+        $description = $jsonData['description'] ?? null;
+
         $album = new Album();
         $album->setTitle($jsonData['title']);
-        $album->setDescription($jsonData['description']);
+        $album->setDescription($description);
         $album->setClasse($classe);
-
-        foreach ($jsonData['photos'] as $photoId) {
-            $photo = $entityManager->getRepository(Photo::class)->find($photoId);
-            if (!$photo) {
-                return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);
-            }
-            $photo->setAlbum($album);
-            $album->addPhoto($photo);
-            $entityManager->persist($photo);
-        }
 
         $entityManager->persist($album);
         $entityManager->flush();
@@ -123,9 +110,7 @@ class AlbumController extends AbstractController
                 if (!$photo) {
                     return $this->json(['error' => 'La photo spécifiée n\'existe pas.'], 400);
                 }
-                $photo->setAlbum($album);
                 $album->addPhoto($photo);
-                $entityManager->persist($photo);
             }
         }
 
@@ -304,7 +289,7 @@ class AlbumController extends AbstractController
     }
 
     //--------------------------------------- LES  ROUTES  POUR  LES PARENTS -------------------------------------//
-    //Afficher la liste des albums
+   //Afficher la liste des albums
     //TODO Afficher les albums d'une classe /api/parent/classes/{id}/albums
 
     #[Route('/api/parent/classes/{id}/albums', name: 'api_parent_classe_albums', methods: ['GET'])]
@@ -339,4 +324,7 @@ class AlbumController extends AbstractController
         }
         return $this->json($album, 200, [], ['groups' => 'get_album_item']);
     }
+
+
+
 }

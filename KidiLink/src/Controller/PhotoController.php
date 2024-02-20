@@ -16,10 +16,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PhotoController extends AbstractController
-{   
-    //--------------------------------------- LES  ROUTES  POUR  L ADMIN -------------------------------------//
+{
     //Afficher toutes les photos
-    #[Route('/api/admin/photos', name: 'api_admin_photos', methods: ['GET'])]
+    #[Route('/api/photos', name: 'api_photos', methods: ['GET'])]
     public function index(PhotoRepository $photoRepository): JsonResponse
     {
 
@@ -28,7 +27,7 @@ class PhotoController extends AbstractController
     }
 
        //Afficher une photo d'après son ID
-       #[Route('/api/admin/photos/{id<\d+>}', name: 'api_admin_photos_show', methods: ['GET'])]
+       #[Route('/api/photos/{id<\d+>}', name: 'api_photos_show', methods: ['GET'])]
        public function show(int $id, PhotoRepository $photoRepository): JsonResponse
        {
            // Récupérer la photo par son ID
@@ -44,7 +43,7 @@ class PhotoController extends AbstractController
        }
 
     //création d'une photo
-    #[Route('/api/admin/photos/new', name: 'api_admin_photos_new', methods: ['POST'])]
+    #[Route('/api/photos/new', name: 'api_photos_nouveau', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
 
@@ -86,7 +85,7 @@ class PhotoController extends AbstractController
     }
 
         // Mise à jour d'une photo
-        #[Route('/api/admin/photos/{id}/edit', name: 'api_admin_photos_update', methods: ['PUT'])]
+        #[Route('/api/photos/{id}/edit', name: 'api_photos_update', methods: ['PUT'])]
         public function update(int $id, Request $request, EntityManagerInterface $entityManager): JsonResponse
         {
             $photo = $entityManager->getRepository(Photo::class)->find($id);
@@ -126,7 +125,7 @@ class PhotoController extends AbstractController
         }
 
     //suppression d'une photo
-    #[Route('/api/admin/photos/{id}/delete', name: 'api_admin_photos_delete', methods: ['DELETE'])]
+    #[Route('/api/photos/{id}/delete', name: 'api_photos_delete', methods: ['DELETE'])]
     public function delete(int $id, PhotoRepository $photoRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $photo = $photoRepository->find($id);
@@ -142,10 +141,12 @@ class PhotoController extends AbstractController
 
         return $this->json(['message' => 'Photo supprimée avec succès'], 200);
     }
-    //--------------------------------------- LES  ROUTES  POUR LES MANAGER -------------------------------------//
+
+//--------------------------------------- LES  ROUTES  POUR LES MANAGER -------------------------------------//
     //Afficher toutes les photos
-    //TODO on veut afficher les photos des albums de sa ou ses classes.
-    //TODO /api/manager/classes/{id}/albums/photos
+    // TODO afficher les photos des albums de sa ou ses classes /api/manager/classes/{id}/albums/photos/
+
+    
     #[Route('/api/manager/photos', name: 'api_manager_photos', methods: ['GET'])]
     public function indexManager(PhotoRepository $photoRepository): JsonResponse
     {
@@ -155,8 +156,8 @@ class PhotoController extends AbstractController
     }
     
        //Afficher une photo d'après son ID
-       //TODO on veut afficher la photo des albums de sa ou ses classes.
-       //TODO /api/manager/classes/{id}/albums/photos/{id}
+        // TODO afficher la photo des albums de sa ou ses classes /api/manager/classes/{id}/albums/photos//{id}
+
        #[Route('/api/manager/photos/{id<\d+>}', name: 'api_manager_photos_show', methods: ['GET'])]
        public function showManager(int $id, PhotoRepository $photoRepository): JsonResponse
        {
@@ -272,11 +273,12 @@ class PhotoController extends AbstractController
         return $this->json(['message' => 'Photo supprimée avec succès'], 200);
     }
 
-    //--------------------------------------- LES  ROUTES  POUR  LES PARENTS -------------------------------------//
+  //--------------------------------------- LES  ROUTES  POUR  LES PARENTS -------------------------------------//
 
     //Afficher toutes les photos
-    //TODO on veut afficher les photos des albums de sa ou ses classes.
-    //TODO /api/parent/classes/{id}/albums/photos
+    // TODO afficher les photos des albums de sa ou ses classes /api/parent/classes/{id}/albums/photos/
+
+    
     #[Route('/api/parent/photos', name: 'api_parent_photos', methods: ['GET'])]
     public function indexParent(PhotoRepository $photoRepository): JsonResponse
     {
@@ -284,15 +286,12 @@ class PhotoController extends AbstractController
         $photos = $photoRepository->findAll();
         return $this->json($photos, 200, [], ['groups' => 'get_photos_collection', 'get_photos_item']);
     }
-
-
      //Afficher une photo d'après son ID
-    //TODO on veut afficher une photos des albums de sa ou ses classes.
-    //TODO /api/parent/classes/{id}/albums/photos/{id}
      #[Route('/api/parent/photos/{id<\d+>}', name: 'api_parent_photos_show', methods: ['GET'])]
      public function showParent(int $id, PhotoRepository $photoRepository): JsonResponse
      {
          // Récupérer la photo par son ID
+ // TODO afficher les photos des albums de sa ou ses classes /api/parent/classes/{id}/albums/photos/
          $photo = $photoRepository->find($id);
      
          // Vérifier si la photo existe
@@ -304,4 +303,3 @@ class PhotoController extends AbstractController
          return $this->json($photo, 200, [], ['groups' => 'get_photo_item']);
      }
 }
-

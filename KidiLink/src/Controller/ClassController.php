@@ -16,9 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ClassController extends AbstractController
 { 
-    //--------------------------------------- LES  ROUTES  POUR  L ADMIN -------------------------------------//
     //Afficher toutes les classes
-    #[Route('/api/admin/classes', name: 'api_admin_classes', methods: ['GET'])]
+    #[Route('/api/classes', name: 'api_classes', methods: ['GET'])]
     public function index(ClasseRepository $classeRepository): JsonResponse
     {
         //Recup les données pour affichage des classes.
@@ -27,7 +26,7 @@ class ClassController extends AbstractController
     }
 
     //Afficher une photo d'après son ID
-    #[Route('/api/admin/classes/{id<\d+>}', name: 'api_admin_classes_show', methods: ['GET'])]
+    #[Route('/api/classes/{id<\d+>}', name: 'api_classes_show', methods: ['GET'])]
     public function show(int $id, ClasseRepository $classeRepository): JsonResponse
     {
         // Récupérer la classe par son ID
@@ -44,7 +43,7 @@ class ClassController extends AbstractController
 
    //création d'une classe
 // Réaliser sa route en POST
-#[Route('/api/admin/classes/new', name: 'api_admin_classes_nouveau', methods: ['POST'])]
+#[Route('/api/classes/new', name: 'api_classes_nouveau', methods: ['POST'])]
 public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
 {
     // Récupérer les données JSON de la requête
@@ -78,7 +77,7 @@ public function create(Request $request, EntityManagerInterface $entityManager):
 }
 
     // Mise à jour d'une classe
-    #[Route('/api/admin/classes/{id}/edit', name: 'api_admin_classes_update', methods: ['PUT'])]
+    #[Route('/api/classes/{id}/edit', name: 'api_classes_update', methods: ['PUT'])]
     public function update(int $id, Request $request, ClasseRepository $classeRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer la classe à mettre à jour
@@ -107,7 +106,7 @@ public function create(Request $request, EntityManagerInterface $entityManager):
     }
 
     //suppression d'une classe
-    #[Route('/api/admin/classes/{id}/delete', name: 'api_admin_classes_delete', methods: ['DELETE'])]
+    #[Route('/api/classes/{id}/delete', name: 'api_classes_delete', methods: ['DELETE'])]
     public function delete(int $id, ClasseRepository $classeRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $classe = $classeRepository->find($id);
@@ -155,8 +154,10 @@ public function create(Request $request, EntityManagerInterface $entityManager):
         return $this->json($classes, 200, [], ['groups' => 'get_classes_collection', 'get_class_item']);
     }
 
-    //----------------------------------------ROUTES POUR LES MANAGER-------------------------------------//
 
+//----------------------------------------ROUTES POUR LES MANAGER-------------------------------------//
+
+    
     //Afficher une classe d'après son ID
     #[Route('/api/manager/classes/{id<\d+>}', name: 'api_manager_classes_show', methods: ['GET'])]
     public function showManager(int $id, ClasseRepository $classeRepository): JsonResponse
@@ -173,11 +174,12 @@ public function create(Request $request, EntityManagerInterface $entityManager):
         return $this->json($classe, 200, [], ['groups' => 'get_class_item']);
     }
 
-  
-
-     //--------------------------------------- LES  ROUTES  POUR  LES PARENTS -------------------------------------//
 
     
+       
+    //--------------------------------------- LES  ROUTES  POUR  LES PARENTS -------------------------------------//
+
+ 
      //Afficher une classe d'après son ID
      #[Route('/api/parent/classes/{id<\d+>}', name: 'api_parentclasses_show', methods: ['GET'])]
      public function showParent(int $id, ClasseRepository $classeRepository): JsonResponse
@@ -193,4 +195,7 @@ public function create(Request $request, EntityManagerInterface $entityManager):
          // Retourner les données de l'utilisateur au format JSON
          return $this->json($classe, 200, [], ['groups' => 'get_class_item']);
      }
-    }
+ 
+
+    
+}

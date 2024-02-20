@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Photo;
 use App\Entity\Comment;
-use App\Repository\AlbumRepository;
 use App\Repository\PhotoRepository;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -51,20 +50,11 @@ class CommentController extends AbstractController
         $jsonData = json_decode($request->getContent(), true);
 
         // Valider les données (ex: vérifier si les champs requis sont présents)
-        if (!isset($jsonData['content'], $jsonData['photo'], $jsonData['album'])) {
+        if (!isset($jsonData['content'], $jsonData['photo'])) {
             return $this->json(['error' => 'Le champ Content et photo sont requis.'], 400);
         }
-        
+
         // Gérer les clés étrangères
-
-        //Récupérer l'album par son ID
-        $albumId = $jsonData['album'];
-        $album = $entityManager->getRepository(Photo::class)->find($albumId);
-
-        //Vérifier si l'album existe
-        if (!$album) {
-            return $this->json(['error' => 'L\'album spécifié n\'existe pas.'], 400);
-        }
         // Récupérer la photo par son ID
         $photoId = $jsonData['photo'];
         $photo = $entityManager->getRepository(Photo::class)->find($photoId);
@@ -135,18 +125,12 @@ public function update(int $id, Request $request, CommentRepository $commentRepo
         //Afficher tous les commentaires
         //TODO on veut afficher les commentaires des photos des albums de sa ou ses classes.
         //TODO /api/manager/classes/{id}/albums/photos/comments
-        #[Route('/api/manager/classes/{id}/albums/photos/comments', name: 'api_manager_class_album_photos_comments', methods: ['GET'])]
-        public function indexManagerForClassAlbumPhotos(int $id, AlbumRepository $albumRepository, CommentRepository $commentRepository, PhotoRepository $photoRepository): JsonResponse
-        { 
-            // Récupérer les photos de la classe par son ID
-            $photos = $photoRepository->findBy(['class' => $id]);
-    
-            // Récupérer les commentaires associés aux photos
-            $comments = [];
-            foreach ($photos as $photo) {
-                $photoComments = $commentRepository->findBy(['photo' => $photo->getId()]);
-                $comments = array_merge($comments, $photoComments);
-            }
+        #[Route('/api/manager/photos/{photo_id}/comments', name: 'api_manager_class_album_photos_comments', methods: ['GET'])]
+        public function indexManagerForClassAlbumPhotos(int $photo_id, CommentRepository $commentRepository, PhotoRepository $photoRepository): JsonResponse
+        {
+            $photo = $photoRepository->find($photo_id);
+
+            $comments = $photo->getComments();
     
             return $this->json($comments, 200, [], ['groups' => 'get_comments_collection', 'get_comment_item']);
         }
@@ -154,25 +138,11 @@ public function update(int $id, Request $request, CommentRepository $commentRepo
         //Afficher un commentaire d'après son ID
         //TODO on veut afficher le commentaire des photos des albums de sa ou ses classes.
         //TODO /api/manager/classes/{id}/albums/photos/comments/{id}
-        #[Route('/api/manager/classes/{classId}/albums/photos/comments/{commentId}', name: 'api_manager_class_album_photos_comment_show', methods: ['GET'])]
-         public function showManagerForClassAlbumPhoto(int $classId, int $commentId, CommentRepository $commentRepository, PhotoRepository $photoRepository): JsonResponse
+        #[Route('/api/manager/comments/{id}', name: 'api_manager_class_album_photos_comment_show', methods: ['GET'])]
+         public function showManagerForClassAlbumPhoto(Comment $comment, CommentRepository $commentRepository, PhotoRepository $photoRepository): JsonResponse
         {
-        // Récupérer le commentaire par son ID
-        $comment = $commentRepository->find($commentId);
-
-        // Vérifier si le commentaire existe
-        if (!$comment) {
-            return $this->json(['error' => 'Commentaire inexistant.'], 404);
+            return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
         }
-
-        // Vérifier si le commentaire appartient à une photo d'un album de la classe spécifiée
-        $photo = $comment->getPhoto();
-        if ($photo && $photo->getAlbum()->getClasse()->getId() !== $classId) {
-            return $this->json(['error' => 'Commentaire inexistant pour cette classe.'], 404);
-        }
-
-        return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
-    }
     
         // Création d'un commentaire
         #[Route('/api/manager/comments/new', name: 'api_manager_comments_new', methods: ['POST'])]
@@ -260,44 +230,31 @@ public function update(int $id, Request $request, CommentRepository $commentRepo
   //Afficher tous les commentaires
  //TODO on veut afficher les commentaires des photos des albums de sa ou ses classes.
  //TODO /api/parent/classes/{id}/albums/photos/comments
- #[Route('/api/parent/classes/{id}/albums/photos/comments', name: 'api_parent_class_album_photos_comments', methods: ['GET'])]
- public function indexParentForClassAlbumPhotos(int $id, CommentRepository $commentRepository, PhotoRepository $photoRepository): JsonResponse
- {
-     // Récupérer les photos de la classe par son ID
-     $photos = $photoRepository->findBy(['class' => $id]);
-
-     // Récupérer les commentaires associés aux photos
-     $comments = [];
-     foreach ($photos as $photo) {
-         $photoComments = $commentRepository->findBy(['photo' => $photo->getId()]);
-         $comments = array_merge($comments, $photoComments);
-     }
-
-     return $this->json($comments, 200, [], ['groups' => 'get_comments_collection', 'get_comment_item']);
- }
+  #[Route('/api/parent/comments', name: 'api_parent_comments', methods: ['GET'])]
+  public function indexParent(CommentRepository $commentRepository): JsonResponse
+  {
+      // Récupérer les données pour affichage des commentaires.
+      $comments = $commentRepository->findAll();
+      return $this->json($comments, 200, [], ['groups' => 'get_comments_collection', 'get_comment_item']);
+  }
 
   //Afficher un commentaire d'après son ID
   //TODO on veut afficher le commentaire des photos des albums de sa ou ses classes.
   //TODO /api/parent/classes/{id}/albums/photos/comments/{id}
-  #[Route('/api/parent/classes/{classId}/albums/photos/comments/{commentId}', name: 'api_parent_class_album_photos_comment_show', methods: ['GET'])]
-  public function showParentForClassAlbumPhoto(int $classId, int $commentId, CommentRepository $commentRepository, PhotoRepository $photoRepository): JsonResponse
- {
- // Récupérer le commentaire par son ID
- $comment = $commentRepository->find($commentId);
-
- // Vérifier si le commentaire existe
- if (!$comment) {
-     return $this->json(['error' => 'Commentaire inexistant.'], 404);
- }
-
- // Vérifier si le commentaire appartient à une photo d'un album de la classe spécifiée
- $photo = $comment->getPhoto();
- if ($photo && $photo->getAlbum()->getClasse()->getId() !== $classId) {
-     return $this->json(['error' => 'Commentaire inexistant pour cette classe.'], 404);
- }
-
- return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
-}
+  #[Route('/api/parent/comments/{id<\d+>}', name: 'api_parent_comments_show', methods: ['GET'])]
+  public function showParent(int $id, CommentRepository $commentRepository): JsonResponse
+  {
+      // Récupérer le commentaire par son ID
+      $comment = $commentRepository->find($id);
+  
+      // Vérifier si le commentaire existe
+      if (!$comment) {
+          return $this->json(['error' => 'Commentaire inexistant.'], 404);
+      }
+  
+      // Retourner les données du commentaire au format JSON
+      return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
+  }
 
   // Création d'un commentaire
   #[Route('/api/parent/comments/new', name: 'api_parent_comments_nouveau', methods: ['POST'])]

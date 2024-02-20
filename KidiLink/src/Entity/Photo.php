@@ -54,25 +54,7 @@ class Photo
     private ?Album $album = null;
 
     #[ORM\OneToMany(mappedBy: 'photo', targetEntity: Comment::class, orphanRemoval: true)]
-
     private Collection $comments;
-
-    #[ORM\ManyToOne(inversedBy: 'photos')]
-    #[ORM\JoinColumn( nullable: false, name: 'album_id', referencedColumnName: 'id', onDelete: "CASCADE")]
-    private Classe $class;
-
-    public function getClass(): ?Classe
-    {
-        return $this->class;
-    }
-
-    public function setClass(?Classe $class): self
-    {
-        $this->class = $class;
-
-        return $this;
-    }
-
 
     public function getId(): ?int
     {
