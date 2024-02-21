@@ -26,6 +26,7 @@ class CommentController extends AbstractController
     {
         // Récupérer les données pour affichage des commentaires.
         $comments = $commentRepository->findAll();
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $comments);
         return $this->json($comments, 200, [], ['groups' => 'get_comments_collection', 'get_comment_item']);
     }
 
@@ -37,6 +38,7 @@ class CommentController extends AbstractController
     {
         // Récupérer le commentaire par son ID
         $comment = $commentRepository->find($id);
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $comment);
 
         // Vérifier si le commentaire existe
         if (!$comment) {
@@ -95,6 +97,7 @@ class CommentController extends AbstractController
     {
         // Récupérer le commentaire à mettre à jour
         $comment = $commentRepository->find($id);
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $comment);
 
         // Vérifier si le commentaire existe
         if (!$comment) {
@@ -123,6 +126,7 @@ class CommentController extends AbstractController
     public function delete(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $comment = $commentRepository->find($id);
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $comment);
 
         // Vérifier si le commentaire existe
         if (!$comment) {

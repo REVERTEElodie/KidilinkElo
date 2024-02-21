@@ -31,7 +31,7 @@ class AlbumVoter extends Voter
         $userClasses = $user->getClasses();
 
         // Vérifier si l'utilisateur appartient à au moins une classe de l'album
-        foreach ($album->getClasses() as $albumClass) {
+        foreach ($album->getClasse() as $albumClass) {
             if ($userClasses->contains($albumClass)) {
                 return true;
             }

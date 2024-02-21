@@ -6,6 +6,7 @@ use App\Entity\Album;
 use App\Entity\Photo;
 use App\Entity\Comment;
 use App\Repository\UserRepository;
+use App\Security\Voter\PhotoVoter;
 use App\Repository\PhotoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +27,7 @@ class PhotoController extends AbstractController
     {
 
         $photos = $photoRepository->findAll();
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $photos);
         return $this->json($photos, 200, [], ['groups' => 'get_photos_collection', 'get_photos_item']);
     }
 
@@ -38,6 +40,7 @@ class PhotoController extends AbstractController
     {
         // Récupérer la photo par son ID
         $photo = $photoRepository->find($id);
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $photo);
 
         // Vérifier si la photo existe
         if (!$photo) {
@@ -67,6 +70,7 @@ class PhotoController extends AbstractController
         // Récupérer l'album par son ID
         $albumId = $jsonData['album'];
         $album = $entityManager->getRepository(Album::class)->find($albumId);
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $album);
         // Vérifier si l'album existe
         if (!$album) {
             return $this->json(['error' => 'L\'album spécifié n\'existe pas.'], 400);
@@ -98,6 +102,7 @@ class PhotoController extends AbstractController
     public function update(int $id, Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $photo = $entityManager->getRepository(Photo::class)->find($id);
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $photo);
 
         // Vérifier si la photo existe
         if (!$photo) {
@@ -139,6 +144,7 @@ class PhotoController extends AbstractController
     public function delete(int $id, PhotoRepository $photoRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $photo = $photoRepository->find($id);
+        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $photo);
 
         // Vérifier si la photo existe
         if (!$photo) {

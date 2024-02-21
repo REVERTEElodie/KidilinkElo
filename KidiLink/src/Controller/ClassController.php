@@ -29,7 +29,6 @@ class ClassController extends AbstractController
     //Afficher une classe d'après son ID
     #[Route('/api/admin/classes/{id<\d+>}', name: 'api_admin_classes_show', methods: ['GET'])]
     #[Route('/api/manager/classes/{id<\d+>}', name: 'api_manager_classes_show', methods: ['GET'])]
-    #[Route('/api/parent/classes/{id<\d+>}', name: 'api_parent_classes_show', methods: ['GET'])]
     public function show(int $id, ClasseRepository $classeRepository): JsonResponse
     {
       
