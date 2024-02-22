@@ -42,17 +42,35 @@ public function show(int $id, UserRepository $userRepository): JsonResponse
     return $this->json($user, 200, [], ['groups' => 'get_user_item']);
 }
 
-    //afficher une liste d'utilisateur par son rôle
+    //afficher une liste d'utilisateur par son rôle admin
     #[Route('/api/admin', name: 'show_admin')]
     public function showAdmin(UserRepository $userRepository): JsonResponse
     {
-        $usersWithRole = $userRepository->findByRoles('ROLE_MANAGER');
+        $usersWithRole = $userRepository->findByAdmin('ROLE_ADMIN');
 
 
         return $this->json($usersWithRole, 200, [], ['groups' => 'get_user_item']);
     }
+    
+        //afficher une liste d'utilisateur par son manager
+        #[Route('/api/manager', name: 'show_manager')]
+        public function showManager(UserRepository $userRepository): JsonResponse
+        {
+            $usersWithRole = $userRepository->findByManager('ROLE_MANAGER');
+    
+    
+            return $this->json($usersWithRole, 200, [], ['groups' => 'get_user_item']);
+        }
+     
+            //afficher une liste d'utilisateur par son rôle parent (donc user)
+    #[Route('/api/parent', name: 'show_parent')]
+    public function showParent(UserRepository $userRepository): JsonResponse
+    {
+        $usersWithRole = $userRepository->findByParent('ROLE_USER');
 
 
+        return $this->json($usersWithRole, 200, [], ['groups' => 'get_user_item']);
+    }
     
     // Création d'un utilisateur
     #[Route('/api/admin/users/new', name: 'api_admin_users_new', methods: ['POST'])]
