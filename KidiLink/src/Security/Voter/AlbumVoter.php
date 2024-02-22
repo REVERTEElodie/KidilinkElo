@@ -9,7 +9,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class AlbumVoter extends Voter
 {
-    public const VIEW = 'ALBUM_VIEW';
+    public const VIEW = 'album';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
@@ -32,6 +32,7 @@ class AlbumVoter extends Voter
             case self::VIEW:
                 $userClasses = $user->getClasses();
                 $albumClasse = $album->getClasse();
+                
 
                 return $userClasses->contains($albumClasse);
             break;

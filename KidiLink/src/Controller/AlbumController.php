@@ -45,7 +45,7 @@ class AlbumController extends AbstractController
     {
         // Récupérer l'album par son ID
         $album = $albumRepository->find($id);
-        $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$album);
+        // $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$album);
         // Vérifier si l'album existe
         if (!$album) {
             return $this->json(['error' => 'Album inexistant.'], 404);
@@ -71,7 +71,7 @@ class AlbumController extends AbstractController
         //Récupérer la classe par son ID
         $classeId = $jsonData['classe'];
         $classe = $entityManager->getRepository(Classe::class)->find($classeId);
-        $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$classe);
+        // $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$classe);
         // Vérifier si la classe existe
         if (!$classe) {
             return $this->json(['error' => 'La classe spécifiée n\'existe pas.'], 400);
@@ -99,7 +99,7 @@ class AlbumController extends AbstractController
         $jsonData = json_decode($request->getContent(), true);
 
         $album = $albumRepository->find($id);
-        $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$album);
+        // $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$album);
 
         // Vérifier si l'album existe
         if (!$album) {
@@ -142,7 +142,7 @@ class AlbumController extends AbstractController
     public function delete(int $id, AlbumRepository $albumRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $album = $albumRepository->find($id);
-        $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$album);
+        // $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$album);
 
         // Vérifier si l'album est présent
         if (!$album) {
