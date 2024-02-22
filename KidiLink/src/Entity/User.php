@@ -82,6 +82,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $roles;
         return $this;
     }
+    
+
 
     public function getPassword(): string
     {

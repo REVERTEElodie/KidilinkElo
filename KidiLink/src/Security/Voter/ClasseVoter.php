@@ -61,3 +61,5 @@ class ClasseVoter extends Voter
         return false;
     }
 }
+
+
