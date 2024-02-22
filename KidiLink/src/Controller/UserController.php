@@ -16,6 +16,9 @@ class UserController extends AbstractController
 {
     // Affichage des utilisateurs
     #[Route('/api/admin/users', name: 'api_admin_users', methods: ['GET'])]
+    #[Route('/api/manager/users', name: 'api_manager_users', methods: ['GET'])]
+    #[Route('/api/parent/users', name: 'api_parent_users', methods: ['GET'])]
+
     public function index(UserRepository $userRepository): JsonResponse
     {
         // Récupérer les données pour l'affichage des utilisateurs
