@@ -43,7 +43,7 @@ public function show(int $id, UserRepository $userRepository): JsonResponse
 }
 
     //afficher une liste d'utilisateur par son rôle admin
-    #[Route('/api/listeAdmin', name: 'show_admin')]
+    #[Route('/api/listeAdmins', name: 'show_admin')]
     public function showAdmin(UserRepository $userRepository): JsonResponse
     {
         $usersWithRole = $userRepository->findByAdmin('ROLE_ADMIN');
@@ -53,7 +53,7 @@ public function show(int $id, UserRepository $userRepository): JsonResponse
     }
     
         //afficher une liste d'utilisateur par son manager
-        #[Route('/api/listeManager', name: 'show_manager')]
+        #[Route('/api/listeManagers', name: 'show_manager')]
         public function showManager(UserRepository $userRepository): JsonResponse
         {
             $usersWithRole = $userRepository->findByManager('ROLE_MANAGER');
@@ -63,7 +63,7 @@ public function show(int $id, UserRepository $userRepository): JsonResponse
         }
      
             //afficher une liste d'utilisateur par son rôle parent (donc user)
-    #[Route('/api/listeParent', name: 'show_parent')]
+    #[Route('/api/listeParents', name: 'show_parent')]
     public function showParent(UserRepository $userRepository): JsonResponse
     {
         $usersWithRole = $userRepository->findByParent('ROLE_USER');
