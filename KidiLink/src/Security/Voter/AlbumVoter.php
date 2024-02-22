@@ -28,13 +28,13 @@ class AlbumVoter extends Voter
             return false;
         }
 
-        $userClasses = $user->getClasses();
+        switch ($attribute) {
+            case self::VIEW:
+                $userClasses = $user->getClasses();
+                $albumClasse = $album->getClasse();
 
-        // Vérifier si l'utilisateur appartient à au moins une classe de l'album
-        foreach ($album->getClasse() as $albumClass) {
-            if ($userClasses->contains($albumClass)) {
-                return true;
-            }
+                return $userClasses->contains($albumClasse);
+            break;
         }
 
         return false;

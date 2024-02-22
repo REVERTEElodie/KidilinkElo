@@ -19,6 +19,7 @@ class ClassController extends AbstractController
 {
     //Afficher toutes les classes
     #[Route('/api/admin/classes', name: 'api_admin_classes', methods: ['GET'])]
+    #[Route('/api/manager/classes', name: 'api_manager_classes', methods: ['GET'])]
     public function index(ClasseRepository $classeRepository): JsonResponse
     {
         //Recup les données pour affichage des classes.

@@ -21,13 +21,18 @@ class AlbumController extends AbstractController
 
     //Afficher la liste des albums
     #[Route('/api/admin/albums', name: 'api_admin_albums', methods: ['GET'])]
-    #[Route('/api/manager/albums', name: 'api_admin_albums', methods: ['GET'])]
-    #[Route('/api/parent/albums', name: 'api_admin_albums', methods: ['GET'])]
+    #[Route('/api/manager/albums', name: 'api_manager_albums', methods: ['GET'])]
+    #[Route('/api/parent/albums', name: 'api_parent_albums', methods: ['GET'])]
     public function index(AlbumRepository $albumRepository): JsonResponse
     {
        
         // Récupérer les données pour affichage des albums.
         $albums = $albumRepository->findAll();
+        // findAllByUser($this->getUser());
+        // SELECT * FROM album
+        // INNER JOIN classe ON album.classe_id = classes.id
+        // INNER JOIN user_classe ON classes.id = users_classes.classe_id
+        // WHERE users_classes.user_id = $this->getUser()->getId()
         $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$albums);
         return $this->json($albums, 200, [], ['groups' => 'get_albums_collection', 'get_album_item']);
     }

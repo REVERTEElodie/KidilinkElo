@@ -119,6 +119,7 @@ class AppFixtures extends Fixture
                 $password = "parent";
                 $newPerson->setLastname('Nom Parent');
             }
+
             // on continue de set les attributs
             $newPerson->setEmail($email);
             $newPerson->setRoles([$person['role']]);
