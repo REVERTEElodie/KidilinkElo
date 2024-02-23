@@ -15,11 +15,11 @@ class Comment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['get_comments_collection', 'get_comment_item'])]
+    #[Groups(['get_comments_collection', 'get_comment_item', 'get_photo_item'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['get_comments_collection', 'get_comment_item'])]
+    #[Groups(['get_comments_collection', 'get_comment_item', 'get_photo_item'])]
     private ?string $content = null;
 
     #[ORM\Column]

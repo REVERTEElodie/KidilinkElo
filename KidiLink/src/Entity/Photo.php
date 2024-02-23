@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PhotoRepository::class)]
+
 class Photo
 {
     #[ORM\Id]
@@ -54,7 +55,24 @@ class Photo
     private ?Album $album = null;
 
     #[ORM\OneToMany(mappedBy: 'photo', targetEntity: Comment::class, orphanRemoval: true)]
+    #[Groups(['get_photo_item'])]
     private Collection $comments;
+
+    // #[ORM\Column(type: 'string')]
+    // private string $brochureFilename;
+
+    // public function getBrochureFilename(): string
+    // {
+    //     return $this->brochureFilename;
+    // }
+
+    // public function setBrochureFilename(string $brochureFilename): self
+    // {
+    //     $this->brochureFilename = $brochureFilename;
+
+    //     return $this;
+    // }
+
 
     public function getId(): ?int
     {

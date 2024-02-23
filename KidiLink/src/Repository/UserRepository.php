@@ -70,6 +70,15 @@ public function findByParent(string $role): array
     return $qb->getQuery()->getResult();
 }
 
+public function findAllManagers(): array  {
+    $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+
+    $qb->where('u.roles LIKE :role')
+    ->setParameter('role', '%ROLE_MANAGER%');
+
+    return $qb->getQuery()->getResult();
+}
+
 // public function findByRoles(string $role): array
 // {
 //     $qb = $this->createQueryBuilder('u'); // Use builder for clarity

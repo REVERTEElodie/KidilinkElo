@@ -17,12 +17,12 @@ class Classe
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['get_classes_collection', 'get_class_item'])]
+    #[Groups(['get_classes_collection', 'get_class_item', 'get_albums_collection', 'get_album_item'])]
     private int $id;
 
     #[ORM\Column(length: 64)]
     #[ASSERT\NotBlank()]
-    #[Groups(['get_classes_collection', 'get_class_item'])]
+    #[Groups(['get_classes_collection', 'get_class_item', 'get_albums_collection', 'get_album_item'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 18)]

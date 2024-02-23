@@ -23,6 +23,7 @@ class AlbumVoter extends Voter
     {   
         /** @var User */
         $user = $token->getUser();
+        $roles = $user->getRoles();
 
         if (!$user instanceof UserInterface) {
             return false;
@@ -30,11 +31,17 @@ class AlbumVoter extends Voter
 
         switch ($attribute) {
             case self::VIEW:
-                $userClasses = $user->getClasses();
                 $albumClasse = $album->getClasse();
-                
 
-                return $userClasses->contains($albumClasse);
+                if(in_array('ROLE_ADMIN', $roles)) {
+                    return true;
+                } elseif(in_array('ROLE_MANAGER', $roles)) {
+                    $managerClasses = $user->getClassesManaged();
+                    return $managerClasses->contains($albumClasse);
+                } else {
+                    $userClasses = $user->getClasses();
+                    return $userClasses->contains($albumClasse);
+                }
             break;
         }
 

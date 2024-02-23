@@ -38,10 +38,15 @@ security:
 
   access_control:
     - { path: ^/api/login_check, roles:  PUBLIC_ACCESS }
+    - { path: ^/api/admin, roles: ROLE_ADMIN }
+    - { path: ^/api/manager, roles: [ROLE_ADMIN, ROLE_MANAGER]}
+    - { path: ^/api/classes, roles: IS_AUTHENTICATED_FULLY }
+    - { path: ^/api/albums, roles: IS_AUTHENTICATED_FULLY}
+    - { path: ^/api/photos, roles: IS_AUTHENTICATED_FULLY}
+    
 
-    - { path: ^/api/admin, roles: [ROLE_ADMIN]}
-    - { path: ^/api/manager, roles: [ROLE_MANAGER]}
-    - { path: ^/api/parent, roles: [ROLE_USER]}
+    # - { path: ^/api/admin, roles: [ROLE_ADMIN]}
+    # - { path: ^/api/parent, roles: [ROLE_USER]}
 
 when@test:
   security:
