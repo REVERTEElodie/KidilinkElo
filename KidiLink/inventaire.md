@@ -57,3 +57,85 @@ Routes :
 `GET /api/photo/{id}` => avoir le détil d'une photo
 `GET /api/photo/{id}/comments` => voir les commentaires d'une photo
 `POST /api/photo/{id}/comments` => poster un commentaire
+
+
+
+
+
+
+## Users
+
+### All users
+`GET /api/admin/users` => récupère tous les users du site
+
+### All managers
+`GET /api/admin/managers` => recupère tous les managers
+
+### Create a new manager
+`POST /api/admin/managers` => créé un nouveau manager si on est {
+  "lastname": string,
+  "firstname": string,
+  "email": string,
+  "password": string
+}
+
+### Create a new parent
+`POST /api/manager/parents` => créé un nouveau parent si on est manager ou admin
+{
+  "lastname": string,
+  "firstname": string,
+  "email": string,
+  "password": string,
+  "classe": int // id de la classe
+}
+
+### Assign parent to a class
+`POST /api/manager/classes/{id}/parents` => assigne un parent existant à une classe 
+{
+  "parent": idParent
+}
+
+## Classe
+
+### User Classes
+`POST /api/classes` => récup toutes les classes de l'utilisateur connecté. Si c'est un directeur, il les verra TOUTES, si c'est un encadrant, il verra celles ou il est parents et celles qu'il encadre. Si c'est un parent, il verra que celles ou il est parent.
+
+### Create new class 
+`POST /api/admin/classes/new`
+{
+  "name": string,
+  "annee_scolaire": date,
+  "manager": int // id du manager
+}
+
+## Album
+
+### Get albums from a classe
+`GET /api/classes/{id}/albums` 
+
+### Get one album
+`GET /api/albums/{id}`
+
+### Create an album
+`POST /api/albums/new`
+{
+  "classe": int // id de la classe,
+  "title": string,
+  "description": ?string
+}
+
+## Photo
+
+### Get all photos from one album
+`GET /api/albums/{id}/photo`
+
+### Get one photo
+`GET /api/photos/{id}`
+
+### Create one photo
+`/api/manager/album/{id}/photos/new`
+{
+  "image": string (base64),
+  "title": string,
+  "description": string
+}
