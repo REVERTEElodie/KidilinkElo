@@ -28,14 +28,36 @@ class UserController extends AbstractController
         return $this->json($users, 200, [], ['groups' => 'get_users_collection', 'get_user_item']);
     }
 
+        /**
+     * List managers for admin
+     */
+    #[Route('/api/admin/admins', name: 'api_admin', methods: ['GET'])]
+    public function allAdmins(UserRepository $userRepository): JsonResponse
+    {
+        // Récupérer les données pour l'affichage des utilisateurs
+        $users = $userRepository->findAllAdmins();
+        return $this->json($users, 200, [], ['groups' => 'get_users_collection', 'get_user_item']);
+    }
+
     /**
      * List managers for admin
      */
-    #[Route('/api/admin/managers', name: 'api_managers', methods: ['GET'])]
+    #[Route('/api/admin/managers', name: 'api_manager', methods: ['GET'])]
     public function allManagers(UserRepository $userRepository): JsonResponse
     {
         // Récupérer les données pour l'affichage des utilisateurs
         $users = $userRepository->findAllManagers();
+        return $this->json($users, 200, [], ['groups' => 'get_users_collection', 'get_user_item']);
+    }
+
+    /**
+     * List managers for admin
+     */
+    #[Route('/api/admin/parents', name: 'api_parents', methods: ['GET'])]
+    public function allParents(UserRepository $userRepository): JsonResponse
+    {
+        // Récupérer les données pour l'affichage des utilisateurs
+        $users = $userRepository->findAllParents();
         return $this->json($users, 200, [], ['groups' => 'get_users_collection', 'get_user_item']);
     }
 

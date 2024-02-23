@@ -79,6 +79,24 @@ public function findAllManagers(): array  {
     return $qb->getQuery()->getResult();
 }
 
+public function findAllAdmins(): array  {
+    $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+
+    $qb->where('u.roles LIKE :role')
+    ->setParameter('role', '%ROLE_ADMIN%');
+
+    return $qb->getQuery()->getResult();
+}
+
+public function findAllParents(): array  {
+    $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+
+    $qb->where('u.roles LIKE :role')
+    ->setParameter('role', '%ROLE_USER%');
+
+    return $qb->getQuery()->getResult();
+}
+
 // public function findByRoles(string $role): array
 // {
 //     $qb = $this->createQueryBuilder('u'); // Use builder for clarity
