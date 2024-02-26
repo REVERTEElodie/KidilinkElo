@@ -16,43 +16,71 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CommentController extends AbstractController
-{
-    //--------------------------------------- LES  ROUTES  POUR  L ADMIN -------------------------------------//
-    //Afficher tous les commentaires
-    #[Route('/api/admin/comments', name: 'api_admin_comments', methods: ['GET'])]
-    #[Route('/api/manager/comments', name: 'api_manager_comments', methods: ['GET'])]
-    #[Route('/api/parent/comments', name: 'api_parent_comments', methods: ['GET'])]
-    public function index(CommentRepository $commentRepository): JsonResponse
+{   
+    private function userDeniedOrAllowToAccessClass($classe, $message)
     {
-        // Récupérer les données pour affichage des commentaires.
-        $comments = $commentRepository->findAll();
-        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $comments);
-        return $this->json($comments, 200, [], ['groups' => 'get_comments_collection', 'get_comment_item']);
-    }
+        /** @var \App\Entity\user $user */
+        $user = $this->getUser();
+        $roles = $user->getRoles();
 
-    //Afficher une photo d'après son ID
-    #[Route('/api/admin/comments/{id<\d+>}', name: 'api_admin_comments_show', methods: ['GET'])]
-    #[Route('/api/manager/comments/{id<\d+>}', name: 'api_manager_comments_show', methods: ['GET'])]
-    #[Route('/api/parent/comments/{id<\d+>}', name: 'api_parent_comments_show', methods: ['GET'])]
-    public function show(int $id, CommentRepository $commentRepository): JsonResponse
+        // Si l'utilisateur est un admin
+        if (in_array('ROLE_ADMIN', $roles)) {
+            // rien puisqu'il a accès à tout
+        }
+        //si l'utilisateur est un manager/encadrant
+        else if (in_array('ROLE_MANAGER', $roles)) {
+            if (!$user->getClassesManaged()->contains($classe) && !$user->getClasses()->contains($classe)) {
+                return $this->json(['error' =>  $message], 403);
+            }
+        } else {
+            // Si l'utilisateur est un parent
+            // Vérifier si l'utilisateur est associé à la classe spécifiée
+            if (!$user->getClasses()->contains($classe)) {
+                return $this->json(['error' => $message], 403);
+            }
+        }
+    }
+    //Afficher tous les commentaires d'une photo
+    #[Route('/api/photo/{id}/comments', name: 'api_comments_albums', methods: ['GET'])]
+    public function allComments(int $id, PhotoRepository $photoRepository, CommentRepository $commentRepository): JsonResponse
     {
+        // Récupérer la photo par son ID
+        $photo = $photoRepository->find($id);
+
+        // Vérifier si la photo existe
+        if (!$photo) {
+            return $this->json(['error' => 'Photo inexistante.'], 404);
+        }
+
+        $this->userDeniedOrAllowToAccessClass($photo, "Vous ne pouvez pas accéder aux commentaires de cette photo.");
+
+        $comments = $photo->getComments();
+
+        return $this->json($comments, 200, [], ['groups' => 'get_comments_collection']);
+    }
+    //Affichage d'un commentaire
+    #[Route('/api/comment/{id}', name: 'api_album', methods: ['GET'])]
+    public function comment(int $id, CommentRepository $commentRepository): JsonResponse
+    {
+        /** @var \App\Entity\user $user */
+        $user = $this->getUser();
+        $roles = $user->getRoles();
+
         // Récupérer le commentaire par son ID
         $comment = $commentRepository->find($id);
-        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $comment);
 
         // Vérifier si le commentaire existe
         if (!$comment) {
             return $this->json(['error' => 'Commentaire inexistant.'], 404);
         }
 
-        // Retourner les données du commentaire au format JSON
+        $this->userDeniedOrAllowToAccessClass($comment->getPhoto(), "Vous ne pouvez pas accéder à ce commentaire.");
+
         return $this->json($comment, 200, [], ['groups' => 'get_comment_item']);
     }
 
     // Création d'un commentaire
-    #[Route('/api/admin/comments/new', name: 'api_admin_comments_new', methods: ['POST'])]
-    #[Route('/api/manager/comments/new', name: 'api_manager_comments_new', methods: ['POST'])]
-    #[Route('/api/parent/comments/new', name: 'api_parent_comments_new', methods: ['POST'])]
+    #[Route('/api/comment/new', name: 'api_comment_new', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer les données JSON de la requête
@@ -90,14 +118,11 @@ class CommentController extends AbstractController
     }
 
     // Mise à jour d'un commentaire
-    #[Route('/api/admin/comments/{id}/edit', name: 'api_admin_comments_update', methods: ['PUT'])]
-    #[Route('/api/manager/comments/{id}/edit', name: 'api_manager_comments_update', methods: ['PUT'])]
-    #[Route('/api/parent/comments/{id}/edit', name: 'api_parent_comments_update', methods: ['PUT'])]
+    #[Route('/api/comment/{id}/edit', name: 'api_comment_update', methods: ['PUT'])]
     public function update(int $id, Request $request, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer le commentaire à mettre à jour
         $comment = $commentRepository->find($id);
-        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $comment);
 
         // Vérifier si le commentaire existe
         if (!$comment) {
@@ -120,13 +145,12 @@ class CommentController extends AbstractController
 
 
     //suppression d'un commentaire
-    #[Route('/api/admin/comments/{id}/delete', name: 'api_admin_comments_delete', methods: ['DELETE'])]
-    #[Route('/api/manager/comments/{id}/delete', name: 'api_manager_comments_delete', methods: ['DELETE'])]
-    #[Route('/api/parent/comments/{id}/delete', name: 'api_parent_comments_delete', methods: ['DELETE'])]
+    #[Route('/api/comment/{id}/delete', name: 'api_comment_delete', methods: ['DELETE'])]
+
     public function delete(int $id, CommentRepository $commentRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $comment = $commentRepository->find($id);
-        $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $comment);
+        // $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $comment);
 
         // Vérifier si le commentaire existe
         if (!$comment) {
@@ -139,6 +163,7 @@ class CommentController extends AbstractController
 
         return $this->json(['message' => 'Commentaire supprimé avec succès'], 200);
     }
+
 
     // #[Route('/api/pudding', name: 'api_pudding', methods: ['GET'])]
     // #[Route('/api/arsenic', name: 'api_arsenic', methods: ['GET'])]

@@ -193,6 +193,7 @@ class AppFixtures extends Fixture
             $photo->setTitle($this->faker->word());
             $photo->setDescription($this->faker->sentence());
             $photo->setUrl("https://picsum.photos/60{$i}/400");
+            
             // albums de 0 à 19
             // si je divise par 10 mon $i par exemple 199 j'obtient 19.9 et que j'arrondis à l'entier inférieur j'ai 19
             // photoCount / alBumCount

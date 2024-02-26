@@ -30,28 +30,31 @@ En tant que parent je dois pouvoir :
 Routes : 
 
 ## Routes admin
-`GET /api/classes` => voir mes classes en tant que directeur
-`POST /api/classes/add` => ajouter une classe => ROLE_ADMIN
-`POST /api/manager/add` => ajouter un encadrant
-`POST /api/classes/encadrants/add` => ajouter un encadrant à une classe
+`GET /api/classes` => voir mes classes en tant que directeur 
+`POST /api/classe/new` => ajouter une classe => ROLE_ADMIN
+`POST /api/admin/manager/new` => ajouter un encadrant
+`POST /api/classes/encadrants/add` => ajouter un encadrant à une classe ( ça on l'a pas encore)
+`GET /api/admin/managers` => recupère tous les managers
+`GET /api/admin/admins` => recupère tous les admins
+`GET /api/admin/parents` => recupère tous les parents
 
 ## Routes manager
 `GET /api/classes` => voir mes classes en tant qu'encadrant
-`GET /api/classes/{id}` => récup les infos d'une classe
-`GET /api/classes/{id}/albums` => voir mes albums d'une classes
+`GET /api/classe/{id}` => récup les infos d'une classe
+`GET /api/classe/{id}/albums` => voir mes albums d'une classes
 `GET /api/album/{id}` => est lié à une classe, donc on peut vérif que l'encadrant a bien accès à cet album => retourne les infos de l'album + les photos
-`POST /api/classes/{id}/albums/add` => ajouter un album pour une classe
-`POST /api/albums/{id}/photos` => ajouter une photo pour une classe
-`GET /api/classes/{id}/parents` => voir les parents d'une classe
-`POST /api/classes/{id}/parents/add` => ajouter les parents à une classe (création de compte)
-`PUT /api/classes/{id}/parents/assign` => assigner un parent EXISTANT à une classe
+`POST /api/classe/{id}/albums/new` => ajouter un album pour une classe
+`POST /api/album/{id}/photos` => ajouter une photo pour une classe
+`GET /api/classe/{id}/parents` => voir les parents d'une classe
+`POST /api/classe/{id}/parents/new` => ajouter les parents à une classe (création de compte)
+`PUT /api/classe/{id}/parents/assign` => assigner un parent EXISTANT à une classe
 `GET /api/parents/search?term={searchTerm}` => chercher un parent par son email, son prenom, son nom => dnas le but de pouvoir l'assigner à une classe
 `POST /api/photo/{id}/comments` => poster un commentaire
 
 ## Parent
 `GET /api/classes` => voir mes classes 
-`GET /api/classes/{id}` => voir les infos d'une classes
-`GET /api/classes/{id}/albums` => voir mes albums d'une classes
+`GET /api/classe/{id}` => voir les infos d'une classes
+`GET /api/classe/{id}/albums` => voir mes albums d'une classes
 `GET /api/album/{id}` => est lié à une classe, donc on peut vérif que le parent a bien accès à cet album => retourne les infos de l'album
 `GET /api/album/{id}/photos` => retourne les photos d'un album
 `GET /api/photo/{id}` => avoir le détil d'une photo
@@ -70,6 +73,13 @@ Routes :
 
 ### All managers
 `GET /api/admin/managers` => recupère tous les managers
+
+### All admins
+`GET /api/admin/admins` => recupère tous les admins
+
+### All parents
+`GET /api/admin/parents` => recupère tous les parents
+
 
 ### Create a new manager
 `POST /api/admin/managers` => créé un nouveau manager si on est {
@@ -98,20 +108,26 @@ Routes :
 ## Classe
 
 ### User Classes
-`POST /api/classes` => récup toutes les classes de l'utilisateur connecté. Si c'est un directeur, il les verra TOUTES, si c'est un encadrant, il verra celles ou il est parents et celles qu'il encadre. Si c'est un parent, il verra que celles ou il est parent.
+`GET /api/classes` => récup toutes les classes de l'utilisateur connecté. Si c'est un directeur, il les verra TOUTES, si c'est un encadrant, il verra celles ou il est parents et celles qu'il encadre. Si c'est un parent, il verra que celles ou il est parent.
 
 ### Create new class 
-`POST /api/admin/classes/new`
+`POST /api/admin/classe/new`
 {
   "name": string,
   "annee_scolaire": date,
   "manager": int // id du manager
 }
 
+### Get one classe details
+`GET /api/classe/{id}`
+
+### Update a classe
+`PUT /api/classe/{id}/edit`
+
 ## Album
 
 ### Get albums from a classe
-`GET /api/classes/{id}/albums` 
+`GET /api/classe/{id}/albums` 
 
 ### Get one album
 `GET /api/albums/{id}`

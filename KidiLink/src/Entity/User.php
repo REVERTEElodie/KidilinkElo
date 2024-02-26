@@ -124,9 +124,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // Si vous avez besoin d'accéder au mot de passe en clair, implémentez les méthodes
-    // getPlainPassword() et setPlainPassword() en conséquence.
-
     /**
      * @return Collection<int, Classe>
      */
