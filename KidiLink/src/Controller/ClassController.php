@@ -80,6 +80,42 @@ class ClassController extends AbstractController
         // retourner les infos au format json
         return $this->json(['message' => 'La classe est créée avec succès'], 201);
     }
+       // Get one classe detail
+    #[Route('/api/classes/{id}', name: 'api_classe_detail', methods: ['GET'])]
+    public function classeDetail(ClasseRepository $classeRepository, int $id)
+    {
+        /** @var \App\Entity\user $user */
+        $user = $this->getUser();
+        $roles = $user->getRoles();
+
+        $classe = $classeRepository->find($id);
+
+        if (!$classe) {
+            return $this->json(['error' => 'La classe n\'existe pas.'], 404);
+        }
+
+        // Si je suis directeur, je dois pouvoir voir TOUTES les classes
+        if (in_array('ROLE_ADMIN', $roles)) {
+            
+        }
+        // Si je suis manager, je dois pouvoir voir les classes dont je suis l'encadrant
+        else if (in_array('ROLE_MANAGER', $roles)) {
+
+          if(!$user->getClassesManaged()->contains($classe) && !$user->getClasses()->contains($classe)) {
+            return $this->json(['error' => "Vous ne pouvez pas accéder aux infos de cette classe."], 403);
+          }
+        }
+        // Si je suis parent, je dois pouvoir voir les classes auxquelles je suis assignée
+        else {
+            if(!$user->getClasses()->contains($classe)) {
+            return $this->json(['error' => "Vous ne pouvez pas accéder aux infos de cette classe."], 403);
+            }
+        }
+
+        return $this->json($classe, 200, [], [
+            'groups' => ['get_class_item']
+        ]);
+    }
 
 
 
