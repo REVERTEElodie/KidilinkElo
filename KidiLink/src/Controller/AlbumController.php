@@ -17,7 +17,7 @@ class AlbumController extends AbstractController
 
     private function userDeniedOrAllowToAccessClass($classe, $message)
     {
-        /** @var \App\Entity\user $user */
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
         $roles = $user->getRoles();
 
@@ -39,7 +39,6 @@ class AlbumController extends AbstractController
         }
     }
 
-    //Afficher les albums d'une classe donné
     #[Route('/api/classe/{id}/albums', name: 'api_classes_albums', methods: ['GET'])]
     public function allAlbums(int $id, ClasseRepository $classeRepository, AlbumRepository $albumRepository): JsonResponse
     {
@@ -51,19 +50,23 @@ class AlbumController extends AbstractController
             return $this->json(['error' => 'Classe inexistante.'], 404);
         }
         
-        //contraintes d'accès : 
-        $this->userDeniedOrAllowToAccessClass($classe, "Vous ne pouvez pas accéder aux albums de cette classe.");
+        // Contraintes d'accès 
+        $message = "Vous ne pouvez pas accéder aux albums de cette classe.";
+        $response = $this->userDeniedOrAllowToAccessClass($classe, $message);
+        if ($response) {
+            return $response;
+        }
         
-        //Récupérer les albums
+        // Récupérer les albums
         $albums = $classe->getAlbums();
 
         return $this->json($albums, 200, [], ['groups' => 'get_albums_collection']);
     }
-    //Afficher un album
+
     #[Route('/api/album/{id}', name: 'api_album', methods: ['GET'])]
     public function album(int $id, AlbumRepository $albumRepository): JsonResponse
     {
-        /** @var \App\Entity\user $user */
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
         $roles = $user->getRoles();
 
@@ -74,13 +77,17 @@ class AlbumController extends AbstractController
         if (!$album) {
             return $this->json(['error' => 'Album inexistant.'], 404);
         }
-        //Contraintes d'accès
-        $this->userDeniedOrAllowToAccessClass($album->getClasse(), "Vous ne pouvez pas accéder à cet album.");
+        
+        // Contraintes d'accès
+        $message = "Vous ne pouvez pas accéder à cet album.";
+        $response = $this->userDeniedOrAllowToAccessClass($album->getClasse(), $message);
+        if ($response) {
+            return $response;
+        }
 
         return $this->json($album, 200, [], ['groups' => 'get_album_item']);
     }
     
-    //Création d'un nouvel album
     #[Route('/api/album/new', name: 'api_manager_album_nouveau', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -91,22 +98,24 @@ class AlbumController extends AbstractController
             return $this->json(['error' => 'Les champs Title et classe sont requis.'], 400);
         }
 
-        //Gérer les clés étrangères
-        //Récupérer la classe par son ID
+        // Gérer les clés étrangères
+        // Récupérer la classe par son ID
         $classeId = $jsonData['classe'];
         $classe = $entityManager->getRepository(Classe::class)->find($classeId);
 
-        $this->userDeniedOrAllowToAccessClass($classe, "Vous ne pouvez pas accéder à cet album.");
-
-        // $this->denyAccessUnlessGranted(AlbumVoter::VIEW,$classe);
-        
         // Vérifier si la classe existe
         if (!$classe) {
             return $this->json(['error' => 'La classe spécifiée n\'existe pas.'], 400);
         }
+        
+        // Contraintes d'accès
+        $message = "Vous ne pouvez pas accéder à cet album.";
+        $response = $this->userDeniedOrAllowToAccessClass($classe, $message);
+        if ($response) {
+            return $response;
+        }
 
         $description = $jsonData['description'] ?? null;
-
 
         $album = new Album();
         $album->setTitle($jsonData['title']);
@@ -116,21 +125,25 @@ class AlbumController extends AbstractController
         $entityManager->persist($album);
         $entityManager->flush();
 
-
         return $this->json(['message' => 'Album créé avec succès'], 201);
     }
 
-    // Mise à jour d'un album
     #[Route('/api/album/{id}/edit', name: 'api_album_update', methods: ['PUT'])]
     public function update(int $id, Request $request, AlbumRepository $albumRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer l'album à mettre à jour
         $album = $albumRepository->find($id);
-        // $this->denyAccessUnlessGranted(PhotoVoter::COMMENT, $comment);
 
         // Vérifier si le album existe
         if (!$album) {
             return $this->json(['error' => 'Album inexistant.'], 404);
+        }
+
+        // Contraintes d'accès
+        $message = "Vous ne pouvez pas accéder à cet album.";
+        $response = $this->userDeniedOrAllowToAccessClass($album->getClasse(), $message);
+        if ($response) {
+            return $response;
         }
 
         // Récupérer les données JSON de la requête
@@ -150,7 +163,6 @@ class AlbumController extends AbstractController
         return $this->json(['message' => 'Album mis à jour avec succès'], 200);
     }
 
-    //suppression d'un album
     #[Route('/api/album/{id}/delete', name: 'api_album_delete', methods: ['DELETE'])]
     public function delete(int $id, AlbumRepository $albumRepository, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -159,11 +171,17 @@ class AlbumController extends AbstractController
         if (!$album) {
             return $this->json(['error' => 'Album non trouvée.'], 404);
         }
+
+        // Contraintes d'accès
+        $message = "Vous ne pouvez pas accéder à cet album.";
+        $response = $this->userDeniedOrAllowToAccessClass($album->getClasse(), $message);
+        if ($response) {
+            return $response;
+        }
+
         // Supprimer l album
         $entityManager->remove($album);
         $entityManager->flush();
         return $this->json(['message' => 'Album supprimée avec succès'], 200);
     }
 }
-
-    

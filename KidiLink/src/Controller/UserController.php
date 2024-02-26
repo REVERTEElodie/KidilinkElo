@@ -106,7 +106,7 @@ class UserController extends AbstractController
      * Create a new parent for admin or manager
      * it needs classe to set the classe for the parent
      */
-    #[Route('/api/manager/parents', name: 'api_parents_create', methods: ['POST'])]
+    #[Route('/api/manager/parent/new', name: 'api_parents_create', methods: ['POST'])]
     public function addParent(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, UserRepository $userRepository)
     {
         $jsonData = json_decode($request->getContent(), true);
@@ -158,7 +158,7 @@ class UserController extends AbstractController
      * Assign a parent to a classe, the parent needs to exists
      * It's useful when a parent is already created and has already one classe
      */
-    #[Route('/api/manager/classes/{id}/parents', name: 'api_users', methods: ['POST'])]
+    #[Route('/api/manager/classe/{id}/parent', name: 'api_classe_parent', methods: ['POST'])]
     public function assignParentToClass(ClasseRepository $classeRepository, int $id, UserRepository $userRepository, Request $request, EntityManagerInterface $em)
     {
         /** @var \App\Entity\user $user */
