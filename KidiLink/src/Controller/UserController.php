@@ -70,7 +70,7 @@ class UserController extends AbstractController
         $jsonData = json_decode($request->getContent(), true);
 
         // Valider les données (ex: vérifier si les champs requis sont présents et non vides)
-        $requiredFields = ['lastname', 'firstname', 'email', 'password'];
+        $requiredFields = ['lastname', 'firstname', 'email', 'password', 'role'];
         foreach ($requiredFields as $field) {
             if (empty($jsonData[$field])) {
                 return $this->json(['error' => 'Le champ ' . $field . ' est requis.'], 400);
@@ -93,7 +93,7 @@ class UserController extends AbstractController
         $user->setPassword($hashedPassword);
 
         // Définition des rôles
-        $user->setRoles(['ROLE_MANAGER']);
+        $user->setRoles([$jsonData['role']]);
 
         // Enregistrement de l'utilisateur
         $entityManager->persist($user);
