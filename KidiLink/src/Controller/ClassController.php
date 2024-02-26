@@ -117,7 +117,20 @@ class ClassController extends AbstractController
         ]);
     }
 
-
+      //suppression d'une classe
+#[Route('/api/admin/classes/{id}/delete', name: 'api_admin_classes_delete', methods: ['DELETE'])]
+public function delete(int $id, ClasseRepository $classeRepository, EntityManagerInterface $entityManager): JsonResponse
+{
+    $classe = $classeRepository->find($id);
+    // Vérifier si la classe existe
+    if (!$classe) {
+        return $this->json(['error' => 'Classe non trouvée.'], 404);
+    }
+    // Supprimer la classe
+    $entityManager->remove($classe);
+    $entityManager->flush();
+    return $this->json(['message' => 'Classe supprimée avec succès'], 200);
+}
 
     // //Afficher toutes les classes
     // #[Route('/api/admin/classes', name: 'api_admin_classes', methods: ['GET'])]
