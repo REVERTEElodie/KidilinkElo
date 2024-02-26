@@ -64,7 +64,7 @@ class UserController extends AbstractController
     /**
      * Create a new manager for admin
      */
-    #[Route('/api/admin/managers/new', name: 'api_managers_create', methods: ['POST'])]
+    #[Route('/api/admin/manager/new', name: 'api_managers_create', methods: ['POST'])]
     public function addManager(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, UserRepository $userRepository)
     {
         $jsonData = json_decode($request->getContent(), true);
