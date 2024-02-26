@@ -54,9 +54,11 @@ class PhotoController extends AbstractController
         $photos = $album->getPhotos();
 
         foreach($photos as $photo) {
-            // ajouter l'url du serveur avant le nom de l'image
-            $photoUrl = $request->getSchemeAndHttpHost().$request->getBasePath()."/uploads/images/" . $photo->getUrl();
-            $photo->setUrl($photoUrl);
+            if (!strpos($photo->getUrl(), 'http', 0)) {
+                // ajouter l'url du serveur avant le nom de l'image
+                $photoUrl = $request->getSchemeAndHttpHost() . $request->getBasePath() . "/uploads/images/" . $photo->getUrl();
+                $photo->setUrl($photoUrl);
+            }
         }
 
         return $this->json($photos, 200, [], ['groups' => 'get_photos_collection', 'get_photos_item']);
@@ -90,9 +92,11 @@ class PhotoController extends AbstractController
                 return $this->json(['error' => "Vous n'avez pas le droit d'accéder aux photos de cette classe"], 403);
             }
         }
-
-        $photoUrl = $request->getSchemeAndHttpHost().$request->getBasePath()."/uploads/images/" . $photo->getUrl();
-        $photo->setUrl($photoUrl);
+        if (!strpos($photo->getUrl(), 'http', 0)) {
+            // ajouter l'url du serveur avant le nom de l'image
+            $photoUrl = $request->getSchemeAndHttpHost() . $request->getBasePath() . "/uploads/images/" . $photo->getUrl();
+            $photo->setUrl($photoUrl);
+        }
 
         return $this->json($photo, 200, [], ['groups' => 'get_photo_item']);
     }
