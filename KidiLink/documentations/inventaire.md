@@ -48,7 +48,7 @@ Routes :
 `GET /api/classe/{id}/parents` => voir les parents d'une classe
 `POST /api/classe/{id}/parents/new` => ajouter les parents à une classe (création de compte)
 `PUT /api/classe/{id}/parents/assign` => assigner un parent EXISTANT à une classe
-`GET /api/parents/search?term={searchTerm}` => chercher un parent par son email, son prenom, son nom => dnas le but de pouvoir l'assigner à une classe
+`GET /api/parents/search?term={searchTerm}` => chercher un parent par son email, son prenom, son nom => dnas le but de pouvoir l'assigner à une classe (ça on l'a pas encore)
 `POST /api/photo/{id}/comments` => poster un commentaire
 
 ## Parent

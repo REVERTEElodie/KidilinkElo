@@ -39,75 +39,87 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    
+
     public function findByAdmin(string $role): array
-{
-    $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+    {
+        $qb = $this->createQueryBuilder('u'); // Use builder for clarity
 
-    $qb->where('u.roles LIKE :ROLE_ADMIN')
-    ->setParameter('ROLE_ADMIN', "%ROLE_ADMIN%");
+        $qb->where('u.roles LIKE :ROLE_ADMIN')
+            ->setParameter('ROLE_ADMIN', "%ROLE_ADMIN%");
 
-    return $qb->getQuery()->getResult();
-}
+        return $qb->getQuery()->getResult();
+    }
 
-public function findByManager(string $role): array
-{
-    $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+    public function findByManager(string $role): array
+    {
+        $qb = $this->createQueryBuilder('u'); // Use builder for clarity
 
-    $qb->where('u.roles LIKE :ROLE_MANAGER')
-    ->setParameter('ROLE_MANAGER', "%ROLE_MANAGER%");
+        $qb->where('u.roles LIKE :ROLE_MANAGER')
+            ->setParameter('ROLE_MANAGER', "%ROLE_MANAGER%");
 
-    return $qb->getQuery()->getResult();
-}
+        return $qb->getQuery()->getResult();
+    }
 
-public function findByParent(string $role): array
-{
-    $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+    public function findByParent(string $role): array
+    {
+        $qb = $this->createQueryBuilder('u'); // Use builder for clarity
 
-    $qb->where('u.roles LIKE :ROLE_USER')
-    ->setParameter('ROLE_USER', "%ROLE_USER%");
+        $qb->where('u.roles LIKE :ROLE_USER')
+            ->setParameter('ROLE_USER', "%ROLE_USER%");
 
-    return $qb->getQuery()->getResult();
-}
+        return $qb->getQuery()->getResult();
+    }
 
-public function findAllManagers(): array  {
-    $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+    public function findAllManagers(): array
+    {
+        $qb = $this->createQueryBuilder('u'); // Use builder for clarity
 
-    $qb->where('u.roles LIKE :role')
-    ->setParameter('role', '%ROLE_MANAGER%');
+        $qb->where('u.roles LIKE :role')
+            ->setParameter('role', '%ROLE_MANAGER%');
 
-    return $qb->getQuery()->getResult();
-}
+        return $qb->getQuery()->getResult();
+    }
 
-public function findAllAdmins(): array  {
-    $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+    public function findAllAdmins(): array
+    {
+        $qb = $this->createQueryBuilder('u'); // Use builder for clarity
 
-    $qb->where('u.roles LIKE :role')
-    ->setParameter('role', '%ROLE_ADMIN%');
+        $qb->where('u.roles LIKE :role')
+            ->setParameter('role', '%ROLE_ADMIN%');
 
-    return $qb->getQuery()->getResult();
-}
+        return $qb->getQuery()->getResult();
+    }
 
-public function findAllParents(): array  {
-    $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+    public function findAllParents(): array
+    {
+        $qb = $this->createQueryBuilder('u'); // Use builder for clarity
 
-    $qb->where('u.roles LIKE :role')
-    ->setParameter('role', '%ROLE_USER%');
+        $qb->where('u.roles LIKE :role')
+            ->setParameter('role', '%ROLE_USER%');
 
-    return $qb->getQuery()->getResult();
-}
+        return $qb->getQuery()->getResult();
+    }
 
-// public function findByRoles(string $role): array
-// {
-//     $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+    public function findOneAdmin() {
+        $qb = $this->createQueryBuilder('u'); // Use builder for clarity
 
-//     $qb->where('u.roles LIKE :roleAdmin OR u.roles LIKE :roleManager OR u.roles LIKE :roleParent')
-//     ->setParameter('roleAdmin', "%ROLE_ADMIN%")
-//     ->setParameter('roleManager', "%ROLE_MANAGER%")
-//     ->setParameter('roleParent', "%ROLE_PARENT%");
+        $qb->where('u.roles LIKE :role')
+            ->setParameter('role', '%ROLE_ADMIN%');
 
-//     return $qb->getQuery()->getResult();
-// }
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    // public function findByRoles(string $role): array
+    // {
+    //     $qb = $this->createQueryBuilder('u'); // Use builder for clarity
+
+    //     $qb->where('u.roles LIKE :roleAdmin OR u.roles LIKE :roleManager OR u.roles LIKE :roleParent')
+    //     ->setParameter('roleAdmin', "%ROLE_ADMIN%")
+    //     ->setParameter('roleManager', "%ROLE_MANAGER%")
+    //     ->setParameter('roleParent', "%ROLE_PARENT%");
+
+    //     return $qb->getQuery()->getResult();
+    // }
 
 
 }
@@ -136,4 +148,3 @@ public function findAllParents(): array  {
 //            ->getOneOrNullResult()
 //        ;
 //    }
-

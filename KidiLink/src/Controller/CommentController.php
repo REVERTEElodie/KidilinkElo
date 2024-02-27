@@ -59,7 +59,7 @@ class CommentController extends AbstractController
         return $this->json($comments, 200, [], ['groups' => 'get_comments_collection']);
     }
     //Affichage d'un commentaire
-    #[Route('/api/comment/{id}', name: 'api_album', methods: ['GET'])]
+    #[Route('/api/comment/{id}', name: 'api_comment', methods: ['GET'])]
     public function comment(int $id, CommentRepository $commentRepository): JsonResponse
     {
         /** @var \App\Entity\user $user */

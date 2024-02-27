@@ -66,9 +66,9 @@ class AlbumController extends AbstractController
     #[Route('/api/album/{id}', name: 'api_album', methods: ['GET'])]
     public function album(int $id, AlbumRepository $albumRepository): JsonResponse
     {
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-        $roles = $user->getRoles();
+        // /** @var \App\Entity\User $user */
+        // $user = $this->getUser();
+        // $roles = $user->getRoles();
 
         // Récupérer l'album par son ID
         $album = $albumRepository->find($id);

@@ -196,6 +196,85 @@ class UserController extends AbstractController
         
         return $this->json(['message' => "{$parent->getFirstname()} a bien été assigné à la classe {$classe->getName()}"], 201);
     }
+    
+    #[Route('/api/users/{id}', name: 'api_classe_parent', methods: ['DELETE'])]
+    public function deleteUser(int $id, UserRepository $userRepository, EntityManagerInterface $em) {
+        // On récup le user à supprimer
+        $userToDelete = $userRepository->find($id);
 
+        if (!$userToDelete) {
+            return $this->json(['error' => "Cet utilisateur n'existe pas."], 400);
+        }
+        /** @var \App\Entity\User $currentUser */
+        $currentUser = $this->getUser();
+        $currentUserRoles = $currentUser->getRoles();
+
+        // Si l'user qu'on veut supprimer est un admin, seul un autre admin peut le supprimer
+        // MAIS aussi si c'est un rôle manager, seul un admin peut le supprimer
+        if (in_array('ROLE_ADMIN', $userToDelete->getRoles()) || in_array('ROLE_MANAGER', $userToDelete->getRoles())) {
+            // Donc, si le currentUser n'est pas admin, on renvoi une erreur
+            if(!in_array('ROLE_ADMIN', $currentUser->getRoles())) {
+                return $this->json(['error' => "Vous ne pouvez pas supprimer cet utilisateur. (vous n'êtes pas admin)"], 403);
+            }
+        // Si c'est un parent
+        } else {
+            if(in_array('ROLE_ADMIN', $currentUser->getRoles())) {
+               // On fait rien, on laisse passer
+               
+               // Puis si l'utilisateur courant est un manager on doit vérifier si il est le manager de la classe de l'user qu'il veut supprimer.
+            } elseif(in_array('ROLE_MANAGER', $currentUser->getRoles())) {
+                // On récupère les classes gérées par le manager
+                $currentManagerClasses = $currentUser->getClassesManaged();
+
+                // On récupère les classes du parent
+                $parentToDeleteClasses = $userToDelete->getClasses();
+
+                // On parcours chaque classe du user à supprimer et on vérifie si la classe est contenue dans les classesManaged du manager
+                // on prépare une variable pour mettre true si y a un matching de classe (=le parent est dans une classe gérée par le currentUser connecté (manager))
+                $match = false;
+                foreach($parentToDeleteClasses as $parentClasse) {
+                    if($currentManagerClasses->contains($parentClasse)) {
+                        $match = true;
+                        // pas la peine de parcourir les autres classes, y a déjà un match, donc il a le droit de supprimer le user
+                        break;
+                    }
+                }
+
+                // Si y a pas de match, il a donc pas le droit de le supprimer
+                if(!$match) {
+                    return $this->json(['error' => "Vous ne pouvez pas supprimer cet utilisateur. (vous êtes manager et ne gérez pas la classe du parent à supprimer)"], 403);
+                }
+            } else {
+                return $this->json(['error' => "Vous ne pouvez pas supprimer cet utilisateur. (vous êtes seulement un parent)"], 403);
+            }
+        }
+
+        // Récupérer le premier admin qu'on trouve 
+        // Lui assigner toutes les classes du manager 
+
+        // Si l'utilisateur qu'on veut supprimer est un manager, il faut parcourir toutes les classes qu'il managed pour les assigner au premier admin qu'on trouve
+        if(in_array('ROLE_MANAGER', $userToDelete->getRoles())) {
+            $admin = $userRepository->findOneAdmin();
+
+            if(!$admin) {
+                return $this->json(['error' => "Impossible de supprimer ce manager, aucun admin trouvé en bdd, contactez les développeurs d'urgence."], 403);
+            }
+
+            $userToDeleteClassesManaged = $userToDelete->getClassesManaged();
+
+            // On redéfini le manager des classes comme étant l'admin pour pas péter la bdd
+            foreach($userToDeleteClassesManaged as $classe) {
+                $classe->setManager($admin);
+            }
+            $em->flush();
+        }
+
+
+        // On a pas été dégagé, on peut donc remove
+        $em->remove($userToDelete);
+        $em->flush();
+
+        return $this->json(['message' => "{$userToDelete->getFirstname()} a bien été supprimé."], 201); 
+    }
 
 }
