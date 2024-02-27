@@ -42,9 +42,9 @@ Routes :
 `GET /api/classes` => voir mes classes en tant qu'encadrant    OK
 `GET /api/classe/{id}` => récup les infos d'une classe         OK
 `GET /api/classe/{id}/albums` => voir mes albums d'une classes OK
-`GET /api/album/{id}` => est lié à une classe, donc on peut vérif que l'encadrant a bien accès à cet album => retourne les infos de l'album + les photos                                                   OK
+`GET /api/album/{id}` => est lié à une classe, donc on peut vérif que l'encadrant a bien accès à cet album => retourne les infos de l'album + les photos                                        OK
 `POST /api/album/new` => ajouter un album pour une classe      OK
-`POST /api/photo/new` => ajouter une photo pour une classe     OK
+`POST /api/manager/album/{id}/photos/new` => ajouter une photo pour une classe     OK
 `POST /api/manager/classe/{id}/parent` => ajouter les parents à une classe (création de compte) OK
 <!-- `PUT /api/classe/{id}/parents/assign` => assigner un parent EXISTANT à une classe    -->
 <!-- `GET /api/parents/search?term={searchTerm}` => chercher un parent par son email, son prenom, son nom => dnas le but de pouvoir l'assigner à une classe (ça on l'a pas encore) -->
@@ -149,7 +149,7 @@ Routes :
 `GET /api/photo/{id}`                     OK
 
 ### Create one photo
-`POST /api/photo/new`       OK
+`POST /api/manager/album/{id}/photos/new`       OK
 {
   "image": string (base64),
   "title": string,
