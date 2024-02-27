@@ -102,7 +102,7 @@ class PhotoController extends AbstractController
     }
 
     //création d'une photo
-    #[Route('/api/photo/new', name: 'api_photo_create', methods: ['POST'])]
+    #[Route('/api/manager/album/{id}/photos/new', name: 'api_photo_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager, AlbumRepository $albumRepository, int $id, ImageHandler $imageHandler): JsonResponse
     {
         /** @var User */
